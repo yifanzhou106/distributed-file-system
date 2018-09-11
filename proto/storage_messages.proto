@@ -1,12 +1,28 @@
 syntax = "proto3";
 option java_package = "edu.usfca.cs.dfs";
 
-message StoreChunk {
-    string fileName = 1;
-    int32 chunkId = 2;
-    bytes data = 3;
+
+message DataPacket {
+    packetType type = 1;
+    string fileName = 2;
+    int32 numChunk = 3;
+    int32 chunkId = 4;
+    bytes data = 5;
+    bool is_last = 6;
+    int32 usage = 7;
+    int32 requestNum = 8;
+    repeated NodeHash nodeList = 9;
+
+    enum packetType {
+        REQUEST = 0;
+        ACK = 1;
+        DATA = 2;
+        HEARTBEAT = 3;
+        NODELIST = 4;
+    }
 }
 
-message RetrieveFile {
-    string fileName = 1;
+message NodeHash {
+    string hashVal = 1;
+    string hostPort = 2;
 }

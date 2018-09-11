@@ -2,6 +2,11 @@ package edu.usfca.cs.dfs.Client;
 
 import com.google.protobuf.ByteString;
 import edu.usfca.cs.dfs.StorageMessages;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
@@ -13,6 +18,9 @@ public class Uploader extends FileManager implements Runnable {
     private String filelocation;
     private int FIXED_PIECE_SIZE = 256 * 1024;
     private FileMap fm;
+    private Socket connectionSocket = new Socket();
+    private int timeout = 1000;
+
 
 
     public Uploader(ExecutorService threads, FileMap fm, String filelocation) {
@@ -50,13 +58,23 @@ public class Uploader extends FileManager implements Runnable {
                 } else {
                     piece = Arrays.copyOfRange(byteItem, i * FIXED_PIECE_SIZE, (i + 1) * FIXED_PIECE_SIZE);
                 }
-                StorageMessages.StoreChunk chunkPiece = StorageMessages.StoreChunk.newBuilder().setChunkId(i).setFileName(filename).setData(ByteString.copyFrom(piece)).build();
+                StorageMessages.DataPacket chunkPiece = StorageMessages.DataPacket.newBuilder().setChunkId(i).setFileName(filename).setData(ByteString.copyFrom(piece)).build();
                 fm.addFile(filename, i, chunkPiece);
             }
 
 //            byte[] byteValue = fm.getFile(filename, blockcount + 1);
 //            storeVideo(filename , byteValue);
 
+            InetAddress ip = InetAddress.getByName(NODE_HOST);
+            connectionSocket = new Socket(ip, NODE_PORT);
+            connectionSocket.setSoTimeout(timeout);
+            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setFileName(filename).setNumChunk(blockcount+1).build();
+            OutputStream outstream = connectionSocket.getOutputStream();
+            helloMessage.writeDelimitedTo(outstream);
+            InputStream instream = connectionSocket.getInputStream();
+            /**
+             * How to send  receive a list using protocol buf?
+             */
 
             System.out.println("Upload successfully");
         } catch (Exception e) {

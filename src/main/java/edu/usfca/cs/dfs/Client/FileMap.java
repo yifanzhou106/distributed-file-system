@@ -14,8 +14,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class FileMap {
 
-    private Map<String, TreeMap<Integer, StorageMessages.StoreChunk>> filemap;
-    private TreeMap<Integer, StorageMessages.StoreChunk> filePieces;
+    private Map<String, TreeMap<Integer, StorageMessages.DataPacket>> filemap;
+    private TreeMap<Integer, StorageMessages.DataPacket> filePieces;
 
     private ReentrantReadWriteLock filemaplock;
 
@@ -31,7 +31,7 @@ public class FileMap {
      * @param pieceid
      * @param chunkPiece
      */
-    public void addFile(String filename, int pieceid, StorageMessages.StoreChunk chunkPiece) {
+    public void addFile(String filename, int pieceid, StorageMessages.DataPacket chunkPiece) {
         filemaplock.writeLock().lock();
         try {
             if (!filemap.containsKey(filename)) {
@@ -56,10 +56,10 @@ public class FileMap {
      * @param pieceid
      * @return
      */
-    public StorageMessages.StoreChunk getPiece(String filename, int pieceid) {
+    public StorageMessages.DataPacket getPiece(String filename, int pieceid) {
         filemaplock.readLock().lock();
         try {
-            StorageMessages.StoreChunk piece;
+            StorageMessages.DataPacket piece;
             filePieces = filemap.get(filename);
             piece = filePieces.get(pieceid);
             return piece;
