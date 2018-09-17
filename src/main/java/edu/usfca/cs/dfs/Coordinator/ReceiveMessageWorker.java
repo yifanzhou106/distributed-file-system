@@ -37,9 +37,10 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                     /**
                      * Check heartbeat in list
                      */
-                    InetAddress host = connectionSocket.getInetAddress();
-                    int port = connectionSocket.getPort();
+                    String host = heartBeatMessage.getHost();
+                    int port = heartBeatMessage.getPort();
                     String hostport = host+":"+port;
+                    System.out.println("hosthort = "+ hostport);
                     if (!nm.checkExist(hostport))
                     {
                         nm.addNode(hostport);
@@ -47,12 +48,13 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                         /**
                          * Send replication of node map to first datanode,then pass around finally receive a Ack from the last datanode
                          */
-                        sendSomthing(hostport, nm.getNodeList());
+//                        sendSomthing(hostport, nm.getNodeList());
                     }
                     else {
                         /**
                          * Get into heartbeat manager, update node's usage, num requests from client, and timestamp
                          */
+                        System.out.println("Already have this node in list");
                     }
 
                 }

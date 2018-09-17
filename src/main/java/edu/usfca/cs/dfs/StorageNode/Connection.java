@@ -1,11 +1,12 @@
-package edu.usfca.cs.dfs.Coordinator;
+package edu.usfca.cs.dfs.StorageNode;
 
 import edu.usfca.cs.dfs.StorageMessages;
 
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class Connection {
     private Socket connectionSocket;
@@ -23,9 +24,16 @@ public class Connection {
             connectionSocket.close();
         }catch (Exception e)
         {
-            e.printStackTrace();
+            System.out.println("Coordinator failed");
         }
-
-
+    }
+    public String nameToSha1(String input) throws NoSuchAlgorithmException {
+        MessageDigest mDigest = MessageDigest.getInstance("SHA1");
+        byte[] result = mDigest.digest(input.getBytes());
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < result.length; i++) {
+            sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        return sb.toString();
     }
 }

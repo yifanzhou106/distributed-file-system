@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 
 import static edu.usfca.cs.dfs.Client.Client.*;
+import static edu.usfca.cs.dfs.StorageMessages.DataPacket.packetType.*;
 
 public class Uploader extends FileManager implements Runnable {
     private ExecutorService threads;
@@ -68,7 +69,7 @@ public class Uploader extends FileManager implements Runnable {
             InetAddress ip = InetAddress.getByName(NODE_HOST);
             connectionSocket = new Socket(ip, NODE_PORT);
             connectionSocket.setSoTimeout(timeout);
-            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setFileName(filename).setNumChunk(blockcount+1).build();
+            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setFileName(filename).setNumChunk(blockcount+1).build();
             OutputStream outstream = connectionSocket.getOutputStream();
             helloMessage.writeDelimitedTo(outstream);
             InputStream instream = connectionSocket.getInputStream();

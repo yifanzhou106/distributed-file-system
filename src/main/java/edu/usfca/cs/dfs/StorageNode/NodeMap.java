@@ -1,10 +1,9 @@
-package edu.usfca.cs.dfs.Coordinator;
+package edu.usfca.cs.dfs.StorageNode;
 
 import edu.usfca.cs.dfs.StorageMessages;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -14,7 +13,7 @@ public class NodeMap {
     private Map<Integer, String> hashLocation = new HashMap<>();
     private ReentrantReadWriteLock nodemaplock;
 
-    public NodeMap (){
+    public NodeMap(){
         hostHashMap = new HashMap();
         nodemaplock = new ReentrantReadWriteLock();
         /**
@@ -39,9 +38,9 @@ public class NodeMap {
         try{
         if (hostHashMap.containsValue(hostport))
             return true;
-        return false;
         }finally{
             nodemaplock.readLock().unlock();
+            return false;
         }
     }
 
@@ -58,7 +57,6 @@ public class NodeMap {
             }
             hostHashMap.put(hashVal, hostport);
 
-            System.out.println(hostHashMap);
         }catch(NoSuchAlgorithmException e){
             e.printStackTrace();
         }

@@ -90,6 +90,21 @@ public final class StorageMessages {
      */
     edu.usfca.cs.dfs.StorageMessages.NodeHashOrBuilder getNodeListOrBuilder(
         int index);
+
+    /**
+     * <code>string host = 10;</code>
+     */
+    java.lang.String getHost();
+    /**
+     * <code>string host = 10;</code>
+     */
+    com.google.protobuf.ByteString
+        getHostBytes();
+
+    /**
+     * <code>int32 port = 11;</code>
+     */
+    int getPort();
   }
   /**
    * Protobuf type {@code DataPacket}
@@ -112,6 +127,8 @@ public final class StorageMessages {
       usage_ = 0;
       requestNum_ = 0;
       nodeList_ = java.util.Collections.emptyList();
+      host_ = "";
+      port_ = 0;
     }
 
     @java.lang.Override
@@ -188,6 +205,17 @@ public final class StorageMessages {
               }
               nodeList_.add(
                   input.readMessage(edu.usfca.cs.dfs.StorageMessages.NodeHash.parser(), extensionRegistry));
+              break;
+            }
+            case 82: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              host_ = s;
+              break;
+            }
+            case 88: {
+
+              port_ = input.readInt32();
               break;
             }
           }
@@ -481,6 +509,49 @@ public final class StorageMessages {
       return nodeList_.get(index);
     }
 
+    public static final int HOST_FIELD_NUMBER = 10;
+    private volatile java.lang.Object host_;
+    /**
+     * <code>string host = 10;</code>
+     */
+    public java.lang.String getHost() {
+      java.lang.Object ref = host_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        host_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string host = 10;</code>
+     */
+    public com.google.protobuf.ByteString
+        getHostBytes() {
+      java.lang.Object ref = host_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        host_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int PORT_FIELD_NUMBER = 11;
+    private int port_;
+    /**
+     * <code>int32 port = 11;</code>
+     */
+    public int getPort() {
+      return port_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -519,6 +590,12 @@ public final class StorageMessages {
       }
       for (int i = 0; i < nodeList_.size(); i++) {
         output.writeMessage(9, nodeList_.get(i));
+      }
+      if (!getHostBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 10, host_);
+      }
+      if (port_ != 0) {
+        output.writeInt32(11, port_);
       }
     }
 
@@ -562,6 +639,13 @@ public final class StorageMessages {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(9, nodeList_.get(i));
       }
+      if (!getHostBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, host_);
+      }
+      if (port_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(11, port_);
+      }
       memoizedSize = size;
       return size;
     }
@@ -595,6 +679,10 @@ public final class StorageMessages {
           == other.getRequestNum());
       result = result && getNodeListList()
           .equals(other.getNodeListList());
+      result = result && getHost()
+          .equals(other.getHost());
+      result = result && (getPort()
+          == other.getPort());
       return result;
     }
 
@@ -626,6 +714,10 @@ public final class StorageMessages {
         hash = (37 * hash) + NODELIST_FIELD_NUMBER;
         hash = (53 * hash) + getNodeListList().hashCode();
       }
+      hash = (37 * hash) + HOST_FIELD_NUMBER;
+      hash = (53 * hash) + getHost().hashCode();
+      hash = (37 * hash) + PORT_FIELD_NUMBER;
+      hash = (53 * hash) + getPort();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -778,6 +870,10 @@ public final class StorageMessages {
         } else {
           nodeListBuilder_.clear();
         }
+        host_ = "";
+
+        port_ = 0;
+
         return this;
       }
 
@@ -819,6 +915,8 @@ public final class StorageMessages {
         } else {
           result.nodeList_ = nodeListBuilder_.build();
         }
+        result.host_ = host_;
+        result.port_ = port_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -911,6 +1009,13 @@ public final class StorageMessages {
               nodeListBuilder_.addAllMessages(other.nodeList_);
             }
           }
+        }
+        if (!other.getHost().isEmpty()) {
+          host_ = other.host_;
+          onChanged();
+        }
+        if (other.getPort() != 0) {
+          setPort(other.getPort());
         }
         onChanged();
         return this;
@@ -1449,6 +1554,101 @@ public final class StorageMessages {
           nodeList_ = null;
         }
         return nodeListBuilder_;
+      }
+
+      private java.lang.Object host_ = "";
+      /**
+       * <code>string host = 10;</code>
+       */
+      public java.lang.String getHost() {
+        java.lang.Object ref = host_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          host_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string host = 10;</code>
+       */
+      public com.google.protobuf.ByteString
+          getHostBytes() {
+        java.lang.Object ref = host_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          host_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string host = 10;</code>
+       */
+      public Builder setHost(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        host_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string host = 10;</code>
+       */
+      public Builder clearHost() {
+        
+        host_ = getDefaultInstance().getHost();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string host = 10;</code>
+       */
+      public Builder setHostBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        host_ = value;
+        onChanged();
+        return this;
+      }
+
+      private int port_ ;
+      /**
+       * <code>int32 port = 11;</code>
+       */
+      public int getPort() {
+        return port_;
+      }
+      /**
+       * <code>int32 port = 11;</code>
+       */
+      public Builder setPort(int value) {
+        
+        port_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 port = 11;</code>
+       */
+      public Builder clearPort() {
+        
+        port_ = 0;
+        onChanged();
+        return this;
       }
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
@@ -2169,16 +2369,17 @@ public final class StorageMessages {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\026storage_messages.proto\"\221\002\n\nDataPacket\022" +
+      "\n\026storage_messages.proto\"\255\002\n\nDataPacket\022" +
       "$\n\004type\030\001 \001(\0162\026.DataPacket.packetType\022\020\n" +
       "\010fileName\030\002 \001(\t\022\020\n\010numChunk\030\003 \001(\005\022\017\n\007chu" +
       "nkId\030\004 \001(\005\022\014\n\004data\030\005 \001(\014\022\017\n\007is_last\030\006 \001(" +
       "\010\022\r\n\005usage\030\007 \001(\005\022\022\n\nrequestNum\030\010 \001(\005\022\033\n\010" +
-      "nodeList\030\t \003(\0132\t.NodeHash\"I\n\npacketType\022" +
-      "\013\n\007REQUEST\020\000\022\007\n\003ACK\020\001\022\010\n\004DATA\020\002\022\r\n\tHEART" +
-      "BEAT\020\003\022\014\n\010NODELIST\020\004\"-\n\010NodeHash\022\017\n\007hash" +
-      "Val\030\001 \001(\t\022\020\n\010hostPort\030\002 \001(\tB\022\n\020edu.usfca" +
-      ".cs.dfsb\006proto3"
+      "nodeList\030\t \003(\0132\t.NodeHash\022\014\n\004host\030\n \001(\t\022" +
+      "\014\n\004port\030\013 \001(\005\"I\n\npacketType\022\013\n\007REQUEST\020\000" +
+      "\022\007\n\003ACK\020\001\022\010\n\004DATA\020\002\022\r\n\tHEARTBEAT\020\003\022\014\n\010NO" +
+      "DELIST\020\004\"-\n\010NodeHash\022\017\n\007hashVal\030\001 \001(\t\022\020\n" +
+      "\010hostPort\030\002 \001(\tB\022\n\020edu.usfca.cs.dfsb\006pro",
+      "to3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2197,7 +2398,7 @@ public final class StorageMessages {
     internal_static_DataPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_DataPacket_descriptor,
-        new java.lang.String[] { "Type", "FileName", "NumChunk", "ChunkId", "Data", "IsLast", "Usage", "RequestNum", "NodeList", });
+        new java.lang.String[] { "Type", "FileName", "NumChunk", "ChunkId", "Data", "IsLast", "Usage", "RequestNum", "NodeList", "Host", "Port", });
     internal_static_NodeHash_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_NodeHash_fieldAccessorTable = new

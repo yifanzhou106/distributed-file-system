@@ -20,10 +20,12 @@ public class HeartBeatManager implements Runnable {
 
     @Override
     public void run() {
-        try {
+
             while (!isShutdown)
             {
+                try {
                 timetowakeup.wait(checkPeriod);
+                timeStampMaplock.readLock().lock();
                 for (Map.Entry<String,Long> entry: timeStampMap.entrySet())
                 {
                     if ((System.currentTimeMillis()-entry.getValue())>checkPeriod)
@@ -31,16 +33,19 @@ public class HeartBeatManager implements Runnable {
                         /**
                          * this node fails, remove this node and tell nodes to fix this problem.
                          */
+                        System.out.println("\nCheck failed node");
                     }
                 }
-
+                }
+                catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }finally {
+                timeStampMaplock.readLock().unlock();
 
             }
         }
-        catch (Exception e)
-        {
 
-        }
     }
 
     public void updateTimestamp (String hostPort){
