@@ -4,10 +4,13 @@ import edu.usfca.cs.dfs.StorageMessages;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import static edu.usfca.cs.dfs.StorageNode.StorageNode.*;
@@ -29,12 +32,13 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
             while (!isShutdown) {
                 Socket connectionSocket = welcomingSocket.accept();
                 InputStream instream = connectionSocket.getInputStream();
+                OutputStream outstream = connectionSocket.getOutputStream();
+
                 StorageMessages.DataPacket requestMessage = StorageMessages.DataPacket.getDefaultInstance();
                 requestMessage = requestMessage.parseDelimitedFrom(instream);
                 if (requestMessage.getType() == StorageMessages.DataPacket.packetType.REQUEST)
                 {
                     NumRequest++;
-
                     /**
                      * Check request node info in list
                      */
@@ -56,9 +60,27 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                      */
                     String hashedName = nameToSha1(filename);
                     System.out.println("\nhashedName is " + hashedName);
+                    System.out.println( nm.pickNodeList(hashedName,numChunks));
+                    nm.pickNodeList(hashedName,numChunks).writeDelimitedTo(outstream);
+                    connectionSocket.close();
+                } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.NODELIST)
+                {
+                    /**
+                     * Update nodelist
+                     */
+                    List nodelist =  requestMessage.getNodeListList();
+                    System.out.println(nodelist);
+                    nm.updateNodeMap(nodelist);
 
-
-
+                } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.DATA)
+                {
+                    /**
+                     * Update nodelist
+                     */
+                    String filename = requestMessage.getFileName();
+                    int chunkId = requestMessage.getChunkId();
+                    fm.addFile(filename,chunkId,requestMessage);
+                    System.out.println("Received file: "+filename+" ChunkId: "+chunkId);
                 }
 
 

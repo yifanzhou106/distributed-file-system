@@ -1,10 +1,14 @@
 package edu.usfca.cs.dfs.Client;
 
 
+import edu.usfca.cs.dfs.StorageMessages;
+
 import javax.imageio.ImageIO;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.sql.Timestamp;
 import static edu.usfca.cs.dfs.Client.Client.*;
 
@@ -73,5 +77,23 @@ public class FileManager  {
         return newFileName;
     }
 
+    private Socket connectionSocket;
+//    private int timeout = 1000;
+
+    public void sendSomthing (String hostport, StorageMessages.DataPacket message){
+        try {
+            String[] address = hostport.split(":");
+            InetAddress ip = InetAddress.getByName(address[0]);
+            int port = Integer.parseInt(address[1]);
+            connectionSocket = new Socket(ip, port);
+//            connectionSocket.setSoTimeout(timeout);
+            OutputStream outstream = connectionSocket.getOutputStream();
+            message.writeDelimitedTo(outstream);
+            connectionSocket.close();
+        }catch (Exception e)
+        {
+            System.out.println("Coordinator failed");
+        }
+    }
 
 }

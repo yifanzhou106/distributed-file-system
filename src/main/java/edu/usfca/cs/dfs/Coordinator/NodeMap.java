@@ -7,15 +7,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class NodeMap {
-    private Map<String, String> hostHashMap;
+    private TreeMap<String, String> hostHashMap;
     private Map<Integer, String> hashLocation = new HashMap<>();
     private ReentrantReadWriteLock nodemaplock;
 
     public NodeMap (){
-        hostHashMap = new HashMap();
+        hostHashMap = new TreeMap();
         nodemaplock = new ReentrantReadWriteLock();
         /**
          * Hard code first 12 nodes location to make the ring balance

@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import static edu.usfca.cs.dfs.Client.Client.*;
@@ -59,7 +60,7 @@ public class Uploader extends FileManager implements Runnable {
                 } else {
                     piece = Arrays.copyOfRange(byteItem, i * FIXED_PIECE_SIZE, (i + 1) * FIXED_PIECE_SIZE);
                 }
-                StorageMessages.DataPacket chunkPiece = StorageMessages.DataPacket.newBuilder().setChunkId(i).setFileName(filename).setData(ByteString.copyFrom(piece)).build();
+                StorageMessages.DataPacket chunkPiece = StorageMessages.DataPacket.newBuilder().setType(DATA).setChunkId(i).setFileName(filename).setData(ByteString.copyFrom(piece)).build();
                 fm.addFile(filename, i, chunkPiece);
             }
 
@@ -72,10 +73,22 @@ public class Uploader extends FileManager implements Runnable {
             StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setFileName(filename).setNumChunk(blockcount+1).build();
             OutputStream outstream = connectionSocket.getOutputStream();
             helloMessage.writeDelimitedTo(outstream);
-            InputStream instream = connectionSocket.getInputStream();
             /**
              * How to send  receive a list using protocol buf?
              */
+            InputStream instream = connectionSocket.getInputStream();
+            StorageMessages.DataPacket nodeListMessage = StorageMessages.DataPacket.getDefaultInstance();
+            nodeListMessage = nodeListMessage.parseDelimitedFrom(instream);
+            List nodeList =  nodeListMessage.getNodeListList();
+            System.out.println(nodeList);
+
+            for (int i = 0; i <nodeList.size(); i++ )
+            {
+                StorageMessages.NodeHash  nodeHash =(StorageMessages.NodeHash ) nodeList.get(i);
+                String hostPort = nodeHash.getHostPort();
+                sendSomthing(hostPort, fm.getPiece(filename,i));
+            }
+
 
             System.out.println("Upload successfully");
         } catch (Exception e) {

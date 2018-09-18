@@ -48,7 +48,7 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                         /**
                          * Send replication of node map to first datanode,then pass around finally receive a Ack from the last datanode
                          */
-//                        sendSomthing(hostport, nm.getNodeList());
+                        sendSomthing(hostport, nm.getNodeList());
                     }
                     else {
                         /**

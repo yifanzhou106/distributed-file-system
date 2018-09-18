@@ -5,82 +5,84 @@ import edu.usfca.cs.dfs.StorageMessages;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class NodeMap {
-    private Map<String, String> hostHashMap;
-    private Map<Integer, String> hashLocation = new HashMap<>();
+    private TreeMap<String, String> hostHashMap;
     private ReentrantReadWriteLock nodemaplock;
 
-    public NodeMap(){
-        hostHashMap = new HashMap();
+    public NodeMap() {
+        hostHashMap = new TreeMap();
         nodemaplock = new ReentrantReadWriteLock();
-        /**
-         * Hard code first 12 nodes location to make the ring balance
-         */
-        hashLocation.put(1,"0");
-        hashLocation.put(2,"8000000000000000000000000000000000000000");
-        hashLocation.put(3,"4000000000000000000000000000000000000000");
-        hashLocation.put(4,"1555555555555555555555555555555555555555");
-        hashLocation.put(5,"2aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        hashLocation.put(6,"5555555555555555555555555555555555555554");
-        hashLocation.put(7,"6aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa9");
-        hashLocation.put(8,"9555555555555555555555555555555555555553");
-        hashLocation.put(9,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa8");
-        hashLocation.put(10,"bffffffffffffffffffffffffffffffffffffffd");
-        hashLocation.put(11,"d555555555555555555555555555555555555552");
-        hashLocation.put(12,"eaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa7");
     }
 
-    public boolean checkExist(String hostport){
+
+    public boolean checkExist(String hostport) {
         nodemaplock.readLock().lock();
-        try{
-        if (hostHashMap.containsValue(hostport))
-            return true;
-        }finally{
+        try {
+            if (hostHashMap.containsValue(hostport))
+                return true;
+        } finally {
             nodemaplock.readLock().unlock();
             return false;
         }
     }
 
-    public void addNode (String hostport){
+    public void updateNodeMap(List nodeList) {
         nodemaplock.writeLock().lock();
-        String hashVal;
-        try{
-            if (hostHashMap.size() <= 12)
-                hashVal = hashLocation.get(hostHashMap.size() +1);
-            else{
-               do {
-                   hashVal = nodeToSha1(hostport);
-               } while (hostHashMap.containsKey(hashVal));
+        try {
+            hostHashMap.clear();
+            for (int i =0; i< nodeList.size();i++)
+            {
+                StorageMessages.NodeHash  nodeHash =(StorageMessages.NodeHash ) nodeList.get(i);
+                hostHashMap.put(nodeHash.getHashVal(),nodeHash.getHostPort());
             }
-            hostHashMap.put(hashVal, hostport);
-
-        }catch(NoSuchAlgorithmException e){
-            e.printStackTrace();
-        }
-        finally {
+            System.out.println("Node map updated "+hostHashMap);
+        } finally {
             nodemaplock.writeLock().unlock();
         }
     }
 
-    public StorageMessages.DataPacket getNodeList (){
+    public StorageMessages.DataPacket pickNodeList(String hashedName, int numChunks) {
         nodemaplock.readLock().lock();
-        try{
+        try {
+            int i = 0;
             StorageMessages.DataPacket.Builder nodeListPacket = StorageMessages.DataPacket.newBuilder();
-            for (Map.Entry<String,String> entry :hostHashMap.entrySet())
-            {
-                StorageMessages.NodeHash hashedNode = StorageMessages.NodeHash.newBuilder().setHashVal(entry.getKey()).setHostPort(entry.getValue()).build();
-                nodeListPacket.addNodeList(hashedNode);
+            for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
+                if (entry.getKey().compareTo(hashedName) >= 0) {
+                    break;
+                }
+                i++;
             }
+            System.out.println("The node bigger than file is " + i);
+            nodeListPacket = getNode(nodeListPacket, i, numChunks);
             nodeListPacket.setType(StorageMessages.DataPacket.packetType.NODELIST);
             return nodeListPacket.build();
-        }finally {
+        } finally {
             nodemaplock.readLock().unlock();
+        }
+    }
 
+    public StorageMessages.DataPacket.Builder getNode(StorageMessages.DataPacket.Builder nodeListPacket, int begin, int numChunks) {
+        int j = 0;
+        int chunkCount = 0;
+        while (chunkCount < numChunks) {
+            for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
+                if (chunkCount < numChunks) {
+                    if (j >= begin) {
+                        StorageMessages.NodeHash hashedNode = StorageMessages.NodeHash.newBuilder().setHashVal(entry.getKey()).setHostPort(entry.getValue()).build();
+                        nodeListPacket.addNodeList(hashedNode);
+                        chunkCount++;
+                    }
+                    j++;
+                } else break;
+            }
         }
 
+        return nodeListPacket;
     }
 
     public String nodeToSha1(String input) throws NoSuchAlgorithmException {

@@ -15,6 +15,8 @@ public class Connection {
         try {
             String[] address = hostport.split(":");
             InetAddress ip = InetAddress.getByName(address[0]);
+            System.out.println(ip);
+
             int port = Integer.parseInt(address[1]);
             connectionSocket = new Socket(ip, port);
 //            connectionSocket.setSoTimeout(timeout);

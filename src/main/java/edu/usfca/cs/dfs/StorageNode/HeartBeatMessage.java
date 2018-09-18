@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static edu.usfca.cs.dfs.Coordinator.Coordinator.HOST;
 import static edu.usfca.cs.dfs.Coordinator.Coordinator.isShutdown;
 import static edu.usfca.cs.dfs.StorageMessages.DataPacket.packetType.*;
 import static edu.usfca.cs.dfs.StorageNode.StorageNode.*;
@@ -29,7 +28,7 @@ public class HeartBeatMessage extends Connection implements Runnable {
             {
                 String hostPort = COORDINATOR_HOST+":"+COORDINATOR_PORT;
                 System.out.println(hostPort);
-                StorageMessages.DataPacket heartBeatMessage = StorageMessages.DataPacket.newBuilder().setType(HEARTBEAT).setHost(InetAddress.getLocalHost().toString()).setPort(PORT).setRequestNum(NumRequest).setUsage(USAGE).build();
+                StorageMessages.DataPacket heartBeatMessage = StorageMessages.DataPacket.newBuilder().setType(HEARTBEAT).setHost(HOST).setPort(PORT).setRequestNum(NumRequest).setUsage(USAGE).build();
                 sendSomthing(hostPort, heartBeatMessage);
                 System.out.println("Send a heartbeat");
             }
