@@ -59,7 +59,7 @@ public class NodeMap {
             }
             System.out.println("The node bigger than file is " + i);
             nodeListPacket = getNode(nodeListPacket, i, numChunks);
-            nodeListPacket.setType(StorageMessages.DataPacket.packetType.NODELIST);
+            nodeListPacket.setType(StorageMessages.DataPacket.packetType.NODELIST).setNumChunk(numChunks);
             return nodeListPacket.build();
         } finally {
             nodemaplock.readLock().unlock();

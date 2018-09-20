@@ -86,12 +86,13 @@ public class Uploader extends FileManager implements Runnable {
             {
                 StorageMessages.NodeHash  nodeHash =(StorageMessages.NodeHash ) nodeList.get(i);
                 String hostPort = nodeHash.getHostPort();
-                sendSomthing(hostPort, fm.getPiece(filename,i));
+                sendData(hostPort, fm.getPiece(filename,i));
             }
 
 
             System.out.println("Upload successfully");
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Upload Error, cannot find file");
         }
 

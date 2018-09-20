@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import static edu.usfca.cs.dfs.StorageMessages.DataPacket.packetType.*;
 import static edu.usfca.cs.dfs.StorageNode.StorageNode.*;
 
 public class ReceiveMessageWorker extends Connection implements Runnable {
@@ -39,6 +40,7 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                 if (requestMessage.getType() == StorageMessages.DataPacket.packetType.REQUEST)
                 {
                     NumRequest++;
+                    int numChunks;
                     /**
                      * Check request node info in list
                      */
@@ -50,7 +52,10 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                      * Get data from protocol buffer
                      */
                     String filename = requestMessage.getFileName();
-                    int numChunks = requestMessage.getNumChunk();
+                    if (!fm.isFileExist(filename))
+                        numChunks = requestMessage.getNumChunk();
+                    else numChunks = fm.getPieceNum(filename);
+
 
                     System.out.println("Filename is " + filename);
                     System.out.println("\nnumChunks is " + numChunks);
@@ -63,7 +68,21 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                     System.out.println( nm.pickNodeList(hashedName,numChunks));
                     nm.pickNodeList(hashedName,numChunks).writeDelimitedTo(outstream);
                     connectionSocket.close();
-                } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.NODELIST)
+                } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.DOWNLOAD)
+                {
+                    /**
+                     * Send file chunks
+                     */
+//                    NumRequest++;
+                    String filename = requestMessage.getFileName();
+                    int chunkID = requestMessage.getChunkId();
+                    StorageMessages.DataPacket dataPacket = fm.getPiece(filename, chunkID);
+                    outstream = connectionSocket.getOutputStream();
+                    dataPacket.writeDelimitedTo(outstream);
+                    connectionSocket.close();
+
+                }
+                else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.NODELIST)
                 {
                     /**
                      * Update nodelist

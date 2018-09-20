@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class NodeMap {
+public class NodeMap extends Connection{
     private TreeMap<String, String> hostHashMap;
     private Map<Integer, String> hashLocation = new HashMap<>();
     private ReentrantReadWriteLock nodemaplock;
@@ -84,6 +84,21 @@ public class NodeMap {
 
         }
 
+    }
+
+    public void BcastAllNode(){
+        nodemaplock.readLock().lock();
+        try{
+            StorageMessages.DataPacket nodeListPacket = getNodeList();
+            for (Map.Entry<String,String> entry :hostHashMap.entrySet())
+            {
+                String hostport = entry.getValue();
+                sendSomthing(hostport, nodeListPacket);
+            }
+        }finally {
+            nodemaplock.readLock().unlock();
+
+        }
     }
 
     public String nodeToSha1(String input) throws NoSuchAlgorithmException {

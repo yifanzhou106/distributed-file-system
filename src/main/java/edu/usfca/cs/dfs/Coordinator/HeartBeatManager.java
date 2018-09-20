@@ -56,6 +56,15 @@ public class HeartBeatManager implements Runnable {
         }finally {
             timeStampMaplock.writeLock().unlock();
         }
+    }
+
+    public Long getTimeStamp(String hostPort) {
+        timeStampMaplock.readLock().lock();
+        try{
+            return timeStampMap.get(hostPort);
+        }finally {
+            timeStampMaplock.readLock().unlock();
+        }
 
     }
 }

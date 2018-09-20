@@ -111,6 +111,17 @@ public class FileMap {
         }
     }
 
+    public Boolean isFileExist (String filename)
+    {
+        filemaplock.readLock().lock();
+        try{
+            return filemap.containsKey(filename);
+        }finally {
+            filemaplock.readLock().unlock();
+
+        }
+    }
+
 //    public JSONObject fileinfoJson(String filename, String size, String piecenum) {
 //
 //        JSONObject fileinfo = new JSONObject();

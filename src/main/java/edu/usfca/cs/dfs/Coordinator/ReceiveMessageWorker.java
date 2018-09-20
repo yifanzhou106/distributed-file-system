@@ -41,21 +41,24 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                     int port = heartBeatMessage.getPort();
                     String hostport = host+":"+port;
                     System.out.println("hosthort = "+ hostport);
+                    hbm.updateTimestamp(hostport);
+
                     if (!nm.checkExist(hostport))
                     {
                         nm.addNode(hostport);
-                        hbm.updateTimestamp(hostport);
                         /**
-                         * Send replication of node map to first datanode,then pass around finally receive a Ack from the last datanode
+                         * Send replication of node map to All datanodes
                          */
-                        sendSomthing(hostport, nm.getNodeList());
+                        nm.BcastAllNode();
                     }
                     else {
                         /**
                          * Get into heartbeat manager, update node's usage, num requests from client, and timestamp
                          */
                         System.out.println("Already have this node in list");
+                        System.out.println("Update TimeStamp to " + hbm.getTimeStamp(hostport));
                     }
+
 
                 }
 

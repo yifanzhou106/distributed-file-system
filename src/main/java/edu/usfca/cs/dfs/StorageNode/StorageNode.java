@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class StorageNode {
     public static String HOST = "localhost";
-    public static int PORT = 6000;
+    public static int PORT = 8200;
     public static String COORDINATOR_HOST = "localhost";
     public static int COORDINATOR_PORT = 7000;
 

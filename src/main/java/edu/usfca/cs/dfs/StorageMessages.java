@@ -254,9 +254,9 @@ public final class StorageMessages {
        */
       REQUEST(0),
       /**
-       * <code>ACK = 1;</code>
+       * <code>DOWNLOAD = 1;</code>
        */
-      ACK(1),
+      DOWNLOAD(1),
       /**
        * <code>DATA = 2;</code>
        */
@@ -277,9 +277,9 @@ public final class StorageMessages {
        */
       public static final int REQUEST_VALUE = 0;
       /**
-       * <code>ACK = 1;</code>
+       * <code>DOWNLOAD = 1;</code>
        */
-      public static final int ACK_VALUE = 1;
+      public static final int DOWNLOAD_VALUE = 1;
       /**
        * <code>DATA = 2;</code>
        */
@@ -313,7 +313,7 @@ public final class StorageMessages {
       public static packetType forNumber(int value) {
         switch (value) {
           case 0: return REQUEST;
-          case 1: return ACK;
+          case 1: return DOWNLOAD;
           case 2: return DATA;
           case 3: return HEARTBEAT;
           case 4: return NODELIST;
@@ -2369,17 +2369,17 @@ public final class StorageMessages {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\026storage_messages.proto\"\255\002\n\nDataPacket\022" +
+      "\n\026storage_messages.proto\"\262\002\n\nDataPacket\022" +
       "$\n\004type\030\001 \001(\0162\026.DataPacket.packetType\022\020\n" +
       "\010fileName\030\002 \001(\t\022\020\n\010numChunk\030\003 \001(\005\022\017\n\007chu" +
       "nkId\030\004 \001(\005\022\014\n\004data\030\005 \001(\014\022\017\n\007is_last\030\006 \001(" +
       "\010\022\r\n\005usage\030\007 \001(\005\022\022\n\nrequestNum\030\010 \001(\005\022\033\n\010" +
       "nodeList\030\t \003(\0132\t.NodeHash\022\014\n\004host\030\n \001(\t\022" +
-      "\014\n\004port\030\013 \001(\005\"I\n\npacketType\022\013\n\007REQUEST\020\000" +
-      "\022\007\n\003ACK\020\001\022\010\n\004DATA\020\002\022\r\n\tHEARTBEAT\020\003\022\014\n\010NO" +
-      "DELIST\020\004\"-\n\010NodeHash\022\017\n\007hashVal\030\001 \001(\t\022\020\n" +
-      "\010hostPort\030\002 \001(\tB\022\n\020edu.usfca.cs.dfsb\006pro",
-      "to3"
+      "\014\n\004port\030\013 \001(\005\"N\n\npacketType\022\013\n\007REQUEST\020\000" +
+      "\022\014\n\010DOWNLOAD\020\001\022\010\n\004DATA\020\002\022\r\n\tHEARTBEAT\020\003\022" +
+      "\014\n\010NODELIST\020\004\"-\n\010NodeHash\022\017\n\007hashVal\030\001 \001" +
+      "(\t\022\020\n\010hostPort\030\002 \001(\tB\022\n\020edu.usfca.cs.dfs",
+      "b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

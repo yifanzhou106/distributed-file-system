@@ -46,7 +46,7 @@ public class UI implements Runnable {
                 case "download":
                     System.out.println("File name? ");
                     String filename = reader.nextLine();
-//                    threads.submit(new Downloader(threads, fm, filename));
+                    threads.submit(new Downloader(threads, fm, filename));
                     break;
 
                 case "exit":
