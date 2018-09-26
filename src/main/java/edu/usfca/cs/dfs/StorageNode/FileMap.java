@@ -9,19 +9,30 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static edu.usfca.cs.dfs.StorageMessages.DataPacket.packetType.DATA;
+import static edu.usfca.cs.dfs.StorageNode.StorageNode.*;
+
 /**
  * Handle with all data maps in client
  */
 public class FileMap {
 
-    private Map<String, TreeMap<Integer, StorageMessages.DataPacket>> filemap;
+    private Map<String, TreeMap<Integer, StorageMessages.DataPacket>> localFileMap;
+    private Map<String, TreeMap<String, StorageMessages.DataPacket>> replicFileMap;
+
     private TreeMap<Integer, StorageMessages.DataPacket> filePieces;
+    private TreeMap<String, StorageMessages.DataPacket> replicPieces;
+
 
     private ReentrantReadWriteLock filemaplock;
+    private ReentrantReadWriteLock replicFilemaplock;
+
 
     public FileMap() {
+        replicFilemaplock = new ReentrantReadWriteLock();
         filemaplock = new ReentrantReadWriteLock();
-        filemap = new HashMap<>();
+        localFileMap = new HashMap<>();
+        replicFileMap = new HashMap<>();
     }
 
     /**
@@ -34,18 +45,36 @@ public class FileMap {
     public void addFile(String filename, int pieceid, StorageMessages.DataPacket chunkPiece) {
         filemaplock.writeLock().lock();
         try {
-            if (!filemap.containsKey(filename)) {
+            if (!localFileMap.containsKey(filename)) {
                 filePieces = new TreeMap<>();
                 filePieces.put(pieceid, chunkPiece);
             } else {
-                filePieces = filemap.get(filename);
+                filePieces = localFileMap.get(filename);
                 filePieces.put(pieceid, chunkPiece);
-                filemap.remove(filename);
+                localFileMap.remove(filename);
             }
-            filemap.put(filename, filePieces);
+            localFileMap.put(filename, filePieces);
 
         } finally {
             filemaplock.writeLock().unlock();
+        }
+    }
+
+    public void addReplic(String hostport, String filename, StorageMessages.DataPacket chunkPiece) {
+        replicFilemaplock.writeLock().lock();
+        try {
+            if (!replicFileMap.containsKey(hostport)) {
+                replicPieces = new TreeMap<>();
+                replicPieces.put(filename, chunkPiece);
+            } else {
+                replicPieces = replicFileMap.get(hostport);
+                replicPieces.put(filename, chunkPiece);
+                replicFileMap.remove(filename);
+            }
+            replicFileMap.put(hostport, replicPieces);
+
+        } finally {
+            replicFilemaplock.writeLock().unlock();
         }
     }
 
@@ -60,7 +89,7 @@ public class FileMap {
         filemaplock.readLock().lock();
         try {
             StorageMessages.DataPacket piece;
-            filePieces = filemap.get(filename);
+            filePieces = localFileMap.get(filename);
             piece = filePieces.get(pieceid);
             return piece;
 
@@ -80,7 +109,7 @@ public class FileMap {
         filemaplock.readLock().lock();
         try {
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            filePieces = filemap.get(filename);
+            filePieces = localFileMap.get(filename);
             for (int i = 0; i < piecenum; i++)
                 output.write(filePieces.get(i).getData().toByteArray());
 
@@ -103,7 +132,7 @@ public class FileMap {
     public int getPieceNum(String filename){
         filemaplock.readLock().lock();
         try{
-            filePieces = filemap.get(filename);
+            filePieces = localFileMap.get(filename);
             return filePieces.size();
         }finally {
             filemaplock.readLock().unlock();
@@ -115,22 +144,20 @@ public class FileMap {
     {
         filemaplock.readLock().lock();
         try{
-            return filemap.containsKey(filename);
+            return localFileMap.containsKey(filename);
         }finally {
             filemaplock.readLock().unlock();
 
         }
     }
 
-//    public JSONObject fileinfoJson(String filename, String size, String piecenum) {
-//
-//        JSONObject fileinfo = new JSONObject();
-//        fileinfo.put("filename", filename);
-//        fileinfo.put("size", size);
-//        fileinfo.put("piecenum", piecenum);
-//
-//        return fileinfo;
-//
-//    }
+    public StorageMessages.DataPacket rebuildReplicChunk (StorageMessages.DataPacket receiveMessage)
+    {
+        int chunkId = receiveMessage.getChunkId();
+        String filename = receiveMessage.getFileName();
+        StorageMessages.DataPacket replicChunk = StorageMessages.DataPacket.newBuilder().setType(DATA).setIsReplic(true).setChunkId(chunkId).setFileName(filename).setData(receiveMessage.getData()).setHost(HOST).setPort(PORT).build();
+        return replicChunk;
+    }
+
 
 }

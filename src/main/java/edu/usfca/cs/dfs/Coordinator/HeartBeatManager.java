@@ -10,10 +10,11 @@ public class HeartBeatManager implements Runnable {
 
     private Map<String,Long> timeStampMap;
     private ReentrantReadWriteLock timeStampMaplock;
-    private ReentrantReadWriteLock timetowakeup;
-    private int checkPeriod = 10000;
+    private NodeMap nm;
+    private int sleepTime = 8000;
 
-    public HeartBeatManager (){
+    public HeartBeatManager (NodeMap nm){
+        this.nm = nm;
         timeStampMap = new HashMap<>();
         timeStampMaplock = new ReentrantReadWriteLock();
     }
@@ -21,31 +22,26 @@ public class HeartBeatManager implements Runnable {
     @Override
     public void run() {
 
-            while (!isShutdown)
-            {
                 try {
-                timetowakeup.wait(checkPeriod);
+                    System.out.println("Heartbeat Check");
                 timeStampMaplock.readLock().lock();
                 for (Map.Entry<String,Long> entry: timeStampMap.entrySet())
                 {
-                    if ((System.currentTimeMillis()-entry.getValue())>checkPeriod)
+                    if ((System.currentTimeMillis() - entry.getValue()) > sleepTime)
                     {
-                        /**
-                         * this node fails, remove this node and tell nodes to fix this problem.
-                         */
-                        System.out.println("\nCheck failed node");
+                        String hostport = entry.getKey();
+                        System.out.println("Node " +hostport + " fails, begin removing and re-balance");
+                        nm.removeNode(hostport);
+                        nm.BcastAllNode();
                     }
                 }
                 }
-                catch (InterruptedException e)
+                catch (Exception e)
                     {
                         e.printStackTrace();
                     }finally {
                 timeStampMaplock.readLock().unlock();
-
             }
-        }
-
     }
 
     public void updateTimestamp (String hostPort){

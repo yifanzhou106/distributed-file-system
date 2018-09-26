@@ -60,7 +60,7 @@ public class Uploader extends FileManager implements Runnable {
                 } else {
                     piece = Arrays.copyOfRange(byteItem, i * FIXED_PIECE_SIZE, (i + 1) * FIXED_PIECE_SIZE);
                 }
-                StorageMessages.DataPacket chunkPiece = StorageMessages.DataPacket.newBuilder().setType(DATA).setChunkId(i).setFileName(filename).setData(ByteString.copyFrom(piece)).build();
+                StorageMessages.DataPacket chunkPiece = StorageMessages.DataPacket.newBuilder().setType(DATA).setIsReplic(false).setChunkId(i).setFileName(filename).setData(ByteString.copyFrom(piece)).build();
                 fm.addFile(filename, i, chunkPiece);
             }
 

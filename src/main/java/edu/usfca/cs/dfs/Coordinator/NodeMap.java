@@ -53,9 +53,7 @@ public class NodeMap extends Connection{
             if (hostHashMap.size() <= 12)
                 hashVal = hashLocation.get(hostHashMap.size() +1);
             else{
-               do {
                    hashVal = nodeToSha1(hostport);
-               } while (hostHashMap.containsKey(hashVal));
             }
             hostHashMap.put(hashVal, hostport);
 
@@ -86,6 +84,29 @@ public class NodeMap extends Connection{
 
     }
 
+    public void removeNode(String hostport){
+
+        nodemaplock.writeLock().lock();
+        String hashVal;
+        try{
+            for (Map.Entry<String,String> entry :hostHashMap.entrySet())
+            {
+                if (entry.getValue().equals(hostport))
+                {
+                    String hashkey = entry.getKey();
+                    hostHashMap.remove(hashkey);
+                    System.out.println("Remove node "+ hostport + " successfully." );
+                    break;
+                }
+            }
+            System.out.println(hostHashMap);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            nodemaplock.writeLock().unlock();
+        }
+    }
     public void BcastAllNode(){
         nodemaplock.readLock().lock();
         try{

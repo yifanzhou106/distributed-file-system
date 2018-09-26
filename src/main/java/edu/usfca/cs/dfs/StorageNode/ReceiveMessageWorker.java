@@ -55,8 +55,6 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                     if (!fm.isFileExist(filename))
                         numChunks = requestMessage.getNumChunk();
                     else numChunks = fm.getPieceNum(filename);
-
-
                     System.out.println("Filename is " + filename);
                     System.out.println("\nnumChunks is " + numChunks);
 
@@ -71,7 +69,7 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                 } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.DOWNLOAD)
                 {
                     /**
-                     * Send file chunks
+                     * Retrieval and Send file chunks
                      */
 //                    NumRequest++;
                     String filename = requestMessage.getFileName();
@@ -94,12 +92,30 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                 } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.DATA)
                 {
                     /**
-                     * Update nodelist
+                     * Store Data
                      */
+                    Boolean isReplic = requestMessage.getIsReplic();
                     String filename = requestMessage.getFileName();
                     int chunkId = requestMessage.getChunkId();
-                    fm.addFile(filename,chunkId,requestMessage);
-                    System.out.println("Received file: "+filename+" ChunkId: "+chunkId);
+                    if (!isReplic) {
+                        fm.addFile(filename, chunkId, requestMessage);
+                        System.out.println("*************************");
+                        System.out.println("Received file: " + filename + " ChunkId: " + chunkId);
+                        System.out.println("Send Replication to nodes.");
+                        System.out.println("*************************");
+
+                        nm.replicateChunkToNodes(fm.rebuildReplicChunk(requestMessage));
+
+                    }
+                    else {
+                        System.out.println("*************************");
+                        System.out.println("Received replication chunk: " + filename + " ChunkId: " + chunkId);
+                        System.out.println("*************************");
+
+                        String hostport = requestMessage.getHost()+":"+requestMessage.getPort();
+                        fm.addReplic(hostport,filename, requestMessage);
+
+                    }
                 }
 
 

@@ -17,7 +17,7 @@ public class Coordinator {
     final ExecutorService threads = Executors.newFixedThreadPool(4);
 
     private NodeMap nm = new NodeMap();
-    private HeartBeatManager hbm = new HeartBeatManager();
+    private HeartBeatManager hbm = new HeartBeatManager(nm);
 
     public static void main(String[] args) {
         Coordinator coo = new Coordinator();

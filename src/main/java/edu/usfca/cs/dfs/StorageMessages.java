@@ -105,6 +105,16 @@ public final class StorageMessages {
      * <code>int32 port = 11;</code>
      */
     int getPort();
+
+    /**
+     * <code>bool isReplic = 12;</code>
+     */
+    boolean getIsReplic();
+
+    /**
+     * <code>int32 numReplic = 13;</code>
+     */
+    int getNumReplic();
   }
   /**
    * Protobuf type {@code DataPacket}
@@ -129,6 +139,8 @@ public final class StorageMessages {
       nodeList_ = java.util.Collections.emptyList();
       host_ = "";
       port_ = 0;
+      isReplic_ = false;
+      numReplic_ = 0;
     }
 
     @java.lang.Override
@@ -216,6 +228,16 @@ public final class StorageMessages {
             case 88: {
 
               port_ = input.readInt32();
+              break;
+            }
+            case 96: {
+
+              isReplic_ = input.readBool();
+              break;
+            }
+            case 104: {
+
+              numReplic_ = input.readInt32();
               break;
             }
           }
@@ -552,6 +574,24 @@ public final class StorageMessages {
       return port_;
     }
 
+    public static final int ISREPLIC_FIELD_NUMBER = 12;
+    private boolean isReplic_;
+    /**
+     * <code>bool isReplic = 12;</code>
+     */
+    public boolean getIsReplic() {
+      return isReplic_;
+    }
+
+    public static final int NUMREPLIC_FIELD_NUMBER = 13;
+    private int numReplic_;
+    /**
+     * <code>int32 numReplic = 13;</code>
+     */
+    public int getNumReplic() {
+      return numReplic_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -596,6 +636,12 @@ public final class StorageMessages {
       }
       if (port_ != 0) {
         output.writeInt32(11, port_);
+      }
+      if (isReplic_ != false) {
+        output.writeBool(12, isReplic_);
+      }
+      if (numReplic_ != 0) {
+        output.writeInt32(13, numReplic_);
       }
     }
 
@@ -646,6 +692,14 @@ public final class StorageMessages {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(11, port_);
       }
+      if (isReplic_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(12, isReplic_);
+      }
+      if (numReplic_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(13, numReplic_);
+      }
       memoizedSize = size;
       return size;
     }
@@ -683,6 +737,10 @@ public final class StorageMessages {
           .equals(other.getHost());
       result = result && (getPort()
           == other.getPort());
+      result = result && (getIsReplic()
+          == other.getIsReplic());
+      result = result && (getNumReplic()
+          == other.getNumReplic());
       return result;
     }
 
@@ -718,6 +776,11 @@ public final class StorageMessages {
       hash = (53 * hash) + getHost().hashCode();
       hash = (37 * hash) + PORT_FIELD_NUMBER;
       hash = (53 * hash) + getPort();
+      hash = (37 * hash) + ISREPLIC_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsReplic());
+      hash = (37 * hash) + NUMREPLIC_FIELD_NUMBER;
+      hash = (53 * hash) + getNumReplic();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -874,6 +937,10 @@ public final class StorageMessages {
 
         port_ = 0;
 
+        isReplic_ = false;
+
+        numReplic_ = 0;
+
         return this;
       }
 
@@ -917,6 +984,8 @@ public final class StorageMessages {
         }
         result.host_ = host_;
         result.port_ = port_;
+        result.isReplic_ = isReplic_;
+        result.numReplic_ = numReplic_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1016,6 +1085,12 @@ public final class StorageMessages {
         }
         if (other.getPort() != 0) {
           setPort(other.getPort());
+        }
+        if (other.getIsReplic() != false) {
+          setIsReplic(other.getIsReplic());
+        }
+        if (other.getNumReplic() != 0) {
+          setNumReplic(other.getNumReplic());
         }
         onChanged();
         return this;
@@ -1647,6 +1722,58 @@ public final class StorageMessages {
       public Builder clearPort() {
         
         port_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private boolean isReplic_ ;
+      /**
+       * <code>bool isReplic = 12;</code>
+       */
+      public boolean getIsReplic() {
+        return isReplic_;
+      }
+      /**
+       * <code>bool isReplic = 12;</code>
+       */
+      public Builder setIsReplic(boolean value) {
+        
+        isReplic_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool isReplic = 12;</code>
+       */
+      public Builder clearIsReplic() {
+        
+        isReplic_ = false;
+        onChanged();
+        return this;
+      }
+
+      private int numReplic_ ;
+      /**
+       * <code>int32 numReplic = 13;</code>
+       */
+      public int getNumReplic() {
+        return numReplic_;
+      }
+      /**
+       * <code>int32 numReplic = 13;</code>
+       */
+      public Builder setNumReplic(int value) {
+        
+        numReplic_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 numReplic = 13;</code>
+       */
+      public Builder clearNumReplic() {
+        
+        numReplic_ = 0;
         onChanged();
         return this;
       }
@@ -2369,17 +2496,18 @@ public final class StorageMessages {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\026storage_messages.proto\"\262\002\n\nDataPacket\022" +
+      "\n\026storage_messages.proto\"\327\002\n\nDataPacket\022" +
       "$\n\004type\030\001 \001(\0162\026.DataPacket.packetType\022\020\n" +
       "\010fileName\030\002 \001(\t\022\020\n\010numChunk\030\003 \001(\005\022\017\n\007chu" +
       "nkId\030\004 \001(\005\022\014\n\004data\030\005 \001(\014\022\017\n\007is_last\030\006 \001(" +
       "\010\022\r\n\005usage\030\007 \001(\005\022\022\n\nrequestNum\030\010 \001(\005\022\033\n\010" +
       "nodeList\030\t \003(\0132\t.NodeHash\022\014\n\004host\030\n \001(\t\022" +
-      "\014\n\004port\030\013 \001(\005\"N\n\npacketType\022\013\n\007REQUEST\020\000" +
-      "\022\014\n\010DOWNLOAD\020\001\022\010\n\004DATA\020\002\022\r\n\tHEARTBEAT\020\003\022" +
-      "\014\n\010NODELIST\020\004\"-\n\010NodeHash\022\017\n\007hashVal\030\001 \001" +
-      "(\t\022\020\n\010hostPort\030\002 \001(\tB\022\n\020edu.usfca.cs.dfs",
-      "b\006proto3"
+      "\014\n\004port\030\013 \001(\005\022\020\n\010isReplic\030\014 \001(\010\022\021\n\tnumRe" +
+      "plic\030\r \001(\005\"N\n\npacketType\022\013\n\007REQUEST\020\000\022\014\n" +
+      "\010DOWNLOAD\020\001\022\010\n\004DATA\020\002\022\r\n\tHEARTBEAT\020\003\022\014\n\010" +
+      "NODELIST\020\004\"-\n\010NodeHash\022\017\n\007hashVal\030\001 \001(\t\022",
+      "\020\n\010hostPort\030\002 \001(\tB\022\n\020edu.usfca.cs.dfsb\006p" +
+      "roto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2398,7 +2526,7 @@ public final class StorageMessages {
     internal_static_DataPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_DataPacket_descriptor,
-        new java.lang.String[] { "Type", "FileName", "NumChunk", "ChunkId", "Data", "IsLast", "Usage", "RequestNum", "NodeList", "Host", "Port", });
+        new java.lang.String[] { "Type", "FileName", "NumChunk", "ChunkId", "Data", "IsLast", "Usage", "RequestNum", "NodeList", "Host", "Port", "IsReplic", "NumReplic", });
     internal_static_NodeHash_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_NodeHash_fieldAccessorTable = new
