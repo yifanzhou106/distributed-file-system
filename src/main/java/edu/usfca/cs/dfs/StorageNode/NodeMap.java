@@ -17,10 +17,15 @@ public class NodeMap extends Connection{
     private TreeMap<String, String> hostHashMap;
     private ReentrantReadWriteLock nodemaplock;
     private int numReplic = 2;
+    private  HashMap<String, StorageMessages.DataPacket> fileMeta;
+    private ReentrantReadWriteLock fileMetalock;
+
 
     public NodeMap() {
         hostHashMap = new TreeMap();
+        fileMeta = new HashMap<>();
         nodemaplock = new ReentrantReadWriteLock();
+        fileMetalock = new ReentrantReadWriteLock();
     }
 
 
@@ -35,13 +40,15 @@ public class NodeMap extends Connection{
         }
     }
 
-    public void updateNodeMap(List nodeList) {
+    public void updateNodeMap(StorageMessages.DataPacket requestMessage) {
         nodemaplock.writeLock().lock();
         try {
+            List nodelist = requestMessage.getNodeListList();
+            System.out.println(nodelist);
             hostHashMap.clear();
-            for (int i =0; i< nodeList.size();i++)
+            for (int i =0; i< nodelist.size();i++)
             {
-                StorageMessages.NodeHash  nodeHash =(StorageMessages.NodeHash ) nodeList.get(i);
+                StorageMessages.NodeHash  nodeHash =(StorageMessages.NodeHash ) nodelist.get(i);
                 hostHashMap.put(nodeHash.getHashVal(),nodeHash.getHostPort());
             }
             System.out.println("Node map updated "+hostHashMap);
@@ -52,15 +59,71 @@ public class NodeMap extends Connection{
 
     public StorageMessages.DataPacket pickNodeList(String hashedName, int numChunks) {
         nodemaplock.readLock().lock();
+        fileMetalock.writeLock().lock();
         try {
             StorageMessages.DataPacket.Builder nodeListPacket = StorageMessages.DataPacket.newBuilder();
             int i = findBeginLocation(hashedName);
 
             nodeListPacket = getNode(nodeListPacket, i, numChunks);
-            nodeListPacket.setType(StorageMessages.DataPacket.packetType.NODELIST).setNumChunk(numChunks);
+            nodeListPacket.setType(StorageMessages.DataPacket.packetType.NODELIST).setNumChunk(numChunks).setFileName(hashedName);
+            fileMeta.put(hashedName, nodeListPacket.build());
             return nodeListPacket.build();
         } finally {
             nodemaplock.readLock().unlock();
+            fileMetalock.writeLock().unlock();
+        }
+    }
+    public void BcastAllFileMeta(){
+        nodemaplock.readLock().lock();
+        try{
+            StorageMessages.DataPacket fileMetaPacket = getFileMetaPacket();
+            for (Map.Entry<String,String> entry :hostHashMap.entrySet())
+            {
+                String hostport = entry.getValue();
+                sendSomthing(hostport, fileMetaPacket);
+            }
+        }finally {
+            nodemaplock.readLock().unlock();
+
+        }
+    }
+    public StorageMessages.DataPacket getFileMetaPacket () {
+        fileMetalock.readLock().lock();
+        try{
+            StorageMessages.DataPacket.Builder fileMetaDataPacket = StorageMessages.DataPacket.newBuilder();
+            for (Map.Entry<String,StorageMessages.DataPacket> entry :fileMeta.entrySet())
+            {
+                fileMetaDataPacket.addFileMetaData(entry.getValue());
+            }
+            fileMetaDataPacket.setType(StorageMessages.DataPacket.packetType.FILE_META);
+            return fileMetaDataPacket.build();
+        }finally {
+            fileMetalock.readLock().unlock();
+        }
+    }
+
+    public void updateFileMeta (StorageMessages.DataPacket requestMessage){
+        fileMetalock.writeLock().lock();
+        try{
+            List fileMetaDataList = requestMessage.getFileMetaDataList();
+            fileMeta.clear();
+            for (int i =0; i< fileMetaDataList.size();i++)
+            {
+                StorageMessages.DataPacket singleMetaData = (StorageMessages.DataPacket)fileMetaDataList.get(i);
+                fileMeta.put(singleMetaData.getFileName(), singleMetaData);
+            }
+            System.out.println("File Metadata map updated "+fileMeta);
+        }finally {
+            fileMetalock.writeLock().unlock();
+        }
+    }
+    public StorageMessages.DataPacket getSingleFileMeta(String hashname)
+    {
+        fileMetalock.readLock().lock();
+        try{
+            return fileMeta.get(hashname);
+        }finally {
+            fileMetalock.readLock().unlock();
         }
     }
 
@@ -71,6 +134,9 @@ public class NodeMap extends Connection{
             for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
                 if (chunkCount < numChunks) {
                     if (j >= begin) {
+                        /**
+                         * if this chunk contains
+                         */
                         StorageMessages.NodeHash hashedNode = StorageMessages.NodeHash.newBuilder().setHashVal(entry.getKey()).setHostPort(entry.getValue()).build();
                         nodeListPacket.addNodeList(hashedNode);
                         chunkCount++;
@@ -97,27 +163,20 @@ public class NodeMap extends Connection{
 
         nodemaplock.readLock().lock();
         try {
-            int i = 0;
             String hostport = HOST + ":" + PORT;
-            for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
-                if (entry.getValue().equals(hostport)) {
-                    break;
-                }
-                i++;
-            }
-            int j = 0;
-            int chunkCount = 0;
-            while (chunkCount < numReplic) {
-                for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
-                    if (chunkCount < numReplic) {
-                        if (j > i) {
-                            sendSomthing(entry.getValue(), requestMessage);
-                            chunkCount++;
-                        }
-                        j++;
-                    } else break;
-                }
-            }
+            /**
+             * send to pre node
+             */
+            String preNodeKey = findPreviousNodeKey(hostport);
+            System.out.println("send replication "+requestMessage.getChunkId()+ " to pre node"+ preNodeKey);
+            sendSomthing(hostHashMap.get(preNodeKey), requestMessage);
+            /**
+             * send to pre pre node
+             */
+            preNodeKey = findPreviousNodeKey(hostHashMap.get(preNodeKey));
+            System.out.println("send replication "+requestMessage.getChunkId()+ " to pre pre node"+ preNodeKey);
+
+            sendSomthing(hostHashMap.get(preNodeKey), requestMessage);
 
         } finally {
             nodemaplock.readLock().unlock();
@@ -140,5 +199,81 @@ public class NodeMap extends Connection{
             i = 0;
         }
         return i;
+    }
+
+    public String findNextNodeKey(String hostport){
+        nodemaplock.readLock().lock();
+        try {
+            String nextNode = "";
+            int i = 0;
+            for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
+                if (entry.getValue().equals(hostport)) {
+                    break;
+                }
+                i++;
+            }
+            i++;
+            if (i == hostHashMap.size())
+                i = 0;
+
+            int j = 0;
+            for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
+                if (i == j) {
+                    nextNode = entry.getKey();
+                    break;
+                }
+                j++;
+            }
+            return nextNode;
+        }finally {
+            nodemaplock.readLock().unlock();
+        }
+    }
+    public String findPreviousNodeKey(String hostport){
+        nodemaplock.readLock().lock();
+        try {
+            String preNode = "";
+            for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
+                if (entry.getValue().equals(hostport)) {
+                    break;
+                }
+                preNode = entry.getKey();
+            }
+            if (preNode.equals(""))
+            {
+                preNode = hostHashMap.lastEntry().getKey();
+            }
+            return preNode;
+        }finally {
+            nodemaplock.readLock().unlock();
+        }
+    }
+
+    public String getNextNode(String hostport){
+        return hostHashMap.get(findNextNodeKey(hostport));
+    }
+
+    public String getPreNode(String hostport){
+        return hostHashMap.get(findPreviousNodeKey(hostport));
+    }
+
+    public String getHashval(String hostport){
+        String hashVal = "";
+        for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
+            if (entry.getValue().equals(hostport)) {
+                hashVal = entry.getKey();
+                break;
+            }
+        }
+        return hashVal;
+    }
+    public int getNodeNum (){
+        nodemaplock.readLock().lock();
+        try{
+        return hostHashMap.size();
+        }
+        finally {
+            nodemaplock.readLock().unlock();
+        }
     }
 }

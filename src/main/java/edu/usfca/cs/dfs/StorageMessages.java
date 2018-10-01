@@ -115,6 +115,103 @@ public final class StorageMessages {
      * <code>int32 numReplic = 13;</code>
      */
     int getNumReplic();
+
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> 
+        getRebalanceLocDataList();
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    edu.usfca.cs.dfs.StorageMessages.DataPacket getRebalanceLocData(int index);
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    int getRebalanceLocDataCount();
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+        getRebalanceLocDataOrBuilderList();
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getRebalanceLocDataOrBuilder(
+        int index);
+
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> 
+        getRebalanceReplicDataList();
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    edu.usfca.cs.dfs.StorageMessages.DataPacket getRebalanceReplicData(int index);
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    int getRebalanceReplicDataCount();
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+        getRebalanceReplicDataOrBuilderList();
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getRebalanceReplicDataOrBuilder(
+        int index);
+
+    /**
+     * <code>string deleteNodeFile = 16;</code>
+     */
+    java.lang.String getDeleteNodeFile();
+    /**
+     * <code>string deleteNodeFile = 16;</code>
+     */
+    com.google.protobuf.ByteString
+        getDeleteNodeFileBytes();
+
+    /**
+     * <code>string beginRebalanceNode = 17;</code>
+     */
+    java.lang.String getBeginRebalanceNode();
+    /**
+     * <code>string beginRebalanceNode = 17;</code>
+     */
+    com.google.protobuf.ByteString
+        getBeginRebalanceNodeBytes();
+
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> 
+        getFileMetaDataList();
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    edu.usfca.cs.dfs.StorageMessages.DataPacket getFileMetaData(int index);
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    int getFileMetaDataCount();
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+        getFileMetaDataOrBuilderList();
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getFileMetaDataOrBuilder(
+        int index);
+
+    /**
+     * <code>bool isDownload = 19;</code>
+     */
+    boolean getIsDownload();
   }
   /**
    * Protobuf type {@code DataPacket}
@@ -141,6 +238,12 @@ public final class StorageMessages {
       port_ = 0;
       isReplic_ = false;
       numReplic_ = 0;
+      rebalanceLocData_ = java.util.Collections.emptyList();
+      rebalanceReplicData_ = java.util.Collections.emptyList();
+      deleteNodeFile_ = "";
+      beginRebalanceNode_ = "";
+      fileMetaData_ = java.util.Collections.emptyList();
+      isDownload_ = false;
     }
 
     @java.lang.Override
@@ -240,6 +343,50 @@ public final class StorageMessages {
               numReplic_ = input.readInt32();
               break;
             }
+            case 114: {
+              if (!((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+                rebalanceLocData_ = new java.util.ArrayList<edu.usfca.cs.dfs.StorageMessages.DataPacket>();
+                mutable_bitField0_ |= 0x00002000;
+              }
+              rebalanceLocData_.add(
+                  input.readMessage(edu.usfca.cs.dfs.StorageMessages.DataPacket.parser(), extensionRegistry));
+              break;
+            }
+            case 122: {
+              if (!((mutable_bitField0_ & 0x00004000) == 0x00004000)) {
+                rebalanceReplicData_ = new java.util.ArrayList<edu.usfca.cs.dfs.StorageMessages.DataPacket>();
+                mutable_bitField0_ |= 0x00004000;
+              }
+              rebalanceReplicData_.add(
+                  input.readMessage(edu.usfca.cs.dfs.StorageMessages.DataPacket.parser(), extensionRegistry));
+              break;
+            }
+            case 130: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              deleteNodeFile_ = s;
+              break;
+            }
+            case 138: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              beginRebalanceNode_ = s;
+              break;
+            }
+            case 146: {
+              if (!((mutable_bitField0_ & 0x00020000) == 0x00020000)) {
+                fileMetaData_ = new java.util.ArrayList<edu.usfca.cs.dfs.StorageMessages.DataPacket>();
+                mutable_bitField0_ |= 0x00020000;
+              }
+              fileMetaData_.add(
+                  input.readMessage(edu.usfca.cs.dfs.StorageMessages.DataPacket.parser(), extensionRegistry));
+              break;
+            }
+            case 152: {
+
+              isDownload_ = input.readBool();
+              break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -250,6 +397,15 @@ public final class StorageMessages {
       } finally {
         if (((mutable_bitField0_ & 0x00000100) == 0x00000100)) {
           nodeList_ = java.util.Collections.unmodifiableList(nodeList_);
+        }
+        if (((mutable_bitField0_ & 0x00002000) == 0x00002000)) {
+          rebalanceLocData_ = java.util.Collections.unmodifiableList(rebalanceLocData_);
+        }
+        if (((mutable_bitField0_ & 0x00004000) == 0x00004000)) {
+          rebalanceReplicData_ = java.util.Collections.unmodifiableList(rebalanceReplicData_);
+        }
+        if (((mutable_bitField0_ & 0x00020000) == 0x00020000)) {
+          fileMetaData_ = java.util.Collections.unmodifiableList(fileMetaData_);
         }
         makeExtensionsImmutable();
       }
@@ -291,6 +447,26 @@ public final class StorageMessages {
        * <code>NODELIST = 4;</code>
        */
       NODELIST(4),
+      /**
+       * <code>REBALANCE = 5;</code>
+       */
+      REBALANCE(5),
+      /**
+       * <code>DELETE_BY_NODE = 6;</code>
+       */
+      DELETE_BY_NODE(6),
+      /**
+       * <code>DELETE_BY_FILENAME = 7;</code>
+       */
+      DELETE_BY_FILENAME(7),
+      /**
+       * <code>REBALANCE_ACK = 8;</code>
+       */
+      REBALANCE_ACK(8),
+      /**
+       * <code>FILE_META = 9;</code>
+       */
+      FILE_META(9),
       UNRECOGNIZED(-1),
       ;
 
@@ -314,6 +490,26 @@ public final class StorageMessages {
        * <code>NODELIST = 4;</code>
        */
       public static final int NODELIST_VALUE = 4;
+      /**
+       * <code>REBALANCE = 5;</code>
+       */
+      public static final int REBALANCE_VALUE = 5;
+      /**
+       * <code>DELETE_BY_NODE = 6;</code>
+       */
+      public static final int DELETE_BY_NODE_VALUE = 6;
+      /**
+       * <code>DELETE_BY_FILENAME = 7;</code>
+       */
+      public static final int DELETE_BY_FILENAME_VALUE = 7;
+      /**
+       * <code>REBALANCE_ACK = 8;</code>
+       */
+      public static final int REBALANCE_ACK_VALUE = 8;
+      /**
+       * <code>FILE_META = 9;</code>
+       */
+      public static final int FILE_META_VALUE = 9;
 
 
       public final int getNumber() {
@@ -339,6 +535,11 @@ public final class StorageMessages {
           case 2: return DATA;
           case 3: return HEARTBEAT;
           case 4: return NODELIST;
+          case 5: return REBALANCE;
+          case 6: return DELETE_BY_NODE;
+          case 7: return DELETE_BY_FILENAME;
+          case 8: return REBALANCE_ACK;
+          case 9: return FILE_META;
           default: return null;
         }
       }
@@ -592,6 +793,188 @@ public final class StorageMessages {
       return numReplic_;
     }
 
+    public static final int REBALANCELOCDATA_FIELD_NUMBER = 14;
+    private java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> rebalanceLocData_;
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> getRebalanceLocDataList() {
+      return rebalanceLocData_;
+    }
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    public java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+        getRebalanceLocDataOrBuilderList() {
+      return rebalanceLocData_;
+    }
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    public int getRebalanceLocDataCount() {
+      return rebalanceLocData_.size();
+    }
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    public edu.usfca.cs.dfs.StorageMessages.DataPacket getRebalanceLocData(int index) {
+      return rebalanceLocData_.get(index);
+    }
+    /**
+     * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+     */
+    public edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getRebalanceLocDataOrBuilder(
+        int index) {
+      return rebalanceLocData_.get(index);
+    }
+
+    public static final int REBALANCEREPLICDATA_FIELD_NUMBER = 15;
+    private java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> rebalanceReplicData_;
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> getRebalanceReplicDataList() {
+      return rebalanceReplicData_;
+    }
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    public java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+        getRebalanceReplicDataOrBuilderList() {
+      return rebalanceReplicData_;
+    }
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    public int getRebalanceReplicDataCount() {
+      return rebalanceReplicData_.size();
+    }
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    public edu.usfca.cs.dfs.StorageMessages.DataPacket getRebalanceReplicData(int index) {
+      return rebalanceReplicData_.get(index);
+    }
+    /**
+     * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+     */
+    public edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getRebalanceReplicDataOrBuilder(
+        int index) {
+      return rebalanceReplicData_.get(index);
+    }
+
+    public static final int DELETENODEFILE_FIELD_NUMBER = 16;
+    private volatile java.lang.Object deleteNodeFile_;
+    /**
+     * <code>string deleteNodeFile = 16;</code>
+     */
+    public java.lang.String getDeleteNodeFile() {
+      java.lang.Object ref = deleteNodeFile_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        deleteNodeFile_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string deleteNodeFile = 16;</code>
+     */
+    public com.google.protobuf.ByteString
+        getDeleteNodeFileBytes() {
+      java.lang.Object ref = deleteNodeFile_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        deleteNodeFile_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int BEGINREBALANCENODE_FIELD_NUMBER = 17;
+    private volatile java.lang.Object beginRebalanceNode_;
+    /**
+     * <code>string beginRebalanceNode = 17;</code>
+     */
+    public java.lang.String getBeginRebalanceNode() {
+      java.lang.Object ref = beginRebalanceNode_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        beginRebalanceNode_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string beginRebalanceNode = 17;</code>
+     */
+    public com.google.protobuf.ByteString
+        getBeginRebalanceNodeBytes() {
+      java.lang.Object ref = beginRebalanceNode_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        beginRebalanceNode_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int FILEMETADATA_FIELD_NUMBER = 18;
+    private java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> fileMetaData_;
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> getFileMetaDataList() {
+      return fileMetaData_;
+    }
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    public java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+        getFileMetaDataOrBuilderList() {
+      return fileMetaData_;
+    }
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    public int getFileMetaDataCount() {
+      return fileMetaData_.size();
+    }
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    public edu.usfca.cs.dfs.StorageMessages.DataPacket getFileMetaData(int index) {
+      return fileMetaData_.get(index);
+    }
+    /**
+     * <code>repeated .DataPacket fileMetaData = 18;</code>
+     */
+    public edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getFileMetaDataOrBuilder(
+        int index) {
+      return fileMetaData_.get(index);
+    }
+
+    public static final int ISDOWNLOAD_FIELD_NUMBER = 19;
+    private boolean isDownload_;
+    /**
+     * <code>bool isDownload = 19;</code>
+     */
+    public boolean getIsDownload() {
+      return isDownload_;
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -642,6 +1025,24 @@ public final class StorageMessages {
       }
       if (numReplic_ != 0) {
         output.writeInt32(13, numReplic_);
+      }
+      for (int i = 0; i < rebalanceLocData_.size(); i++) {
+        output.writeMessage(14, rebalanceLocData_.get(i));
+      }
+      for (int i = 0; i < rebalanceReplicData_.size(); i++) {
+        output.writeMessage(15, rebalanceReplicData_.get(i));
+      }
+      if (!getDeleteNodeFileBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 16, deleteNodeFile_);
+      }
+      if (!getBeginRebalanceNodeBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 17, beginRebalanceNode_);
+      }
+      for (int i = 0; i < fileMetaData_.size(); i++) {
+        output.writeMessage(18, fileMetaData_.get(i));
+      }
+      if (isDownload_ != false) {
+        output.writeBool(19, isDownload_);
       }
     }
 
@@ -700,6 +1101,28 @@ public final class StorageMessages {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(13, numReplic_);
       }
+      for (int i = 0; i < rebalanceLocData_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(14, rebalanceLocData_.get(i));
+      }
+      for (int i = 0; i < rebalanceReplicData_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(15, rebalanceReplicData_.get(i));
+      }
+      if (!getDeleteNodeFileBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(16, deleteNodeFile_);
+      }
+      if (!getBeginRebalanceNodeBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(17, beginRebalanceNode_);
+      }
+      for (int i = 0; i < fileMetaData_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(18, fileMetaData_.get(i));
+      }
+      if (isDownload_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(19, isDownload_);
+      }
       memoizedSize = size;
       return size;
     }
@@ -741,6 +1164,18 @@ public final class StorageMessages {
           == other.getIsReplic());
       result = result && (getNumReplic()
           == other.getNumReplic());
+      result = result && getRebalanceLocDataList()
+          .equals(other.getRebalanceLocDataList());
+      result = result && getRebalanceReplicDataList()
+          .equals(other.getRebalanceReplicDataList());
+      result = result && getDeleteNodeFile()
+          .equals(other.getDeleteNodeFile());
+      result = result && getBeginRebalanceNode()
+          .equals(other.getBeginRebalanceNode());
+      result = result && getFileMetaDataList()
+          .equals(other.getFileMetaDataList());
+      result = result && (getIsDownload()
+          == other.getIsDownload());
       return result;
     }
 
@@ -781,6 +1216,25 @@ public final class StorageMessages {
           getIsReplic());
       hash = (37 * hash) + NUMREPLIC_FIELD_NUMBER;
       hash = (53 * hash) + getNumReplic();
+      if (getRebalanceLocDataCount() > 0) {
+        hash = (37 * hash) + REBALANCELOCDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getRebalanceLocDataList().hashCode();
+      }
+      if (getRebalanceReplicDataCount() > 0) {
+        hash = (37 * hash) + REBALANCEREPLICDATA_FIELD_NUMBER;
+        hash = (53 * hash) + getRebalanceReplicDataList().hashCode();
+      }
+      hash = (37 * hash) + DELETENODEFILE_FIELD_NUMBER;
+      hash = (53 * hash) + getDeleteNodeFile().hashCode();
+      hash = (37 * hash) + BEGINREBALANCENODE_FIELD_NUMBER;
+      hash = (53 * hash) + getBeginRebalanceNode().hashCode();
+      if (getFileMetaDataCount() > 0) {
+        hash = (37 * hash) + FILEMETADATA_FIELD_NUMBER;
+        hash = (53 * hash) + getFileMetaDataList().hashCode();
+      }
+      hash = (37 * hash) + ISDOWNLOAD_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getIsDownload());
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -907,6 +1361,9 @@ public final class StorageMessages {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
           getNodeListFieldBuilder();
+          getRebalanceLocDataFieldBuilder();
+          getRebalanceReplicDataFieldBuilder();
+          getFileMetaDataFieldBuilder();
         }
       }
       public Builder clear() {
@@ -940,6 +1397,30 @@ public final class StorageMessages {
         isReplic_ = false;
 
         numReplic_ = 0;
+
+        if (rebalanceLocDataBuilder_ == null) {
+          rebalanceLocData_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00002000);
+        } else {
+          rebalanceLocDataBuilder_.clear();
+        }
+        if (rebalanceReplicDataBuilder_ == null) {
+          rebalanceReplicData_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00004000);
+        } else {
+          rebalanceReplicDataBuilder_.clear();
+        }
+        deleteNodeFile_ = "";
+
+        beginRebalanceNode_ = "";
+
+        if (fileMetaDataBuilder_ == null) {
+          fileMetaData_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00020000);
+        } else {
+          fileMetaDataBuilder_.clear();
+        }
+        isDownload_ = false;
 
         return this;
       }
@@ -986,6 +1467,36 @@ public final class StorageMessages {
         result.port_ = port_;
         result.isReplic_ = isReplic_;
         result.numReplic_ = numReplic_;
+        if (rebalanceLocDataBuilder_ == null) {
+          if (((bitField0_ & 0x00002000) == 0x00002000)) {
+            rebalanceLocData_ = java.util.Collections.unmodifiableList(rebalanceLocData_);
+            bitField0_ = (bitField0_ & ~0x00002000);
+          }
+          result.rebalanceLocData_ = rebalanceLocData_;
+        } else {
+          result.rebalanceLocData_ = rebalanceLocDataBuilder_.build();
+        }
+        if (rebalanceReplicDataBuilder_ == null) {
+          if (((bitField0_ & 0x00004000) == 0x00004000)) {
+            rebalanceReplicData_ = java.util.Collections.unmodifiableList(rebalanceReplicData_);
+            bitField0_ = (bitField0_ & ~0x00004000);
+          }
+          result.rebalanceReplicData_ = rebalanceReplicData_;
+        } else {
+          result.rebalanceReplicData_ = rebalanceReplicDataBuilder_.build();
+        }
+        result.deleteNodeFile_ = deleteNodeFile_;
+        result.beginRebalanceNode_ = beginRebalanceNode_;
+        if (fileMetaDataBuilder_ == null) {
+          if (((bitField0_ & 0x00020000) == 0x00020000)) {
+            fileMetaData_ = java.util.Collections.unmodifiableList(fileMetaData_);
+            bitField0_ = (bitField0_ & ~0x00020000);
+          }
+          result.fileMetaData_ = fileMetaData_;
+        } else {
+          result.fileMetaData_ = fileMetaDataBuilder_.build();
+        }
+        result.isDownload_ = isDownload_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1091,6 +1602,95 @@ public final class StorageMessages {
         }
         if (other.getNumReplic() != 0) {
           setNumReplic(other.getNumReplic());
+        }
+        if (rebalanceLocDataBuilder_ == null) {
+          if (!other.rebalanceLocData_.isEmpty()) {
+            if (rebalanceLocData_.isEmpty()) {
+              rebalanceLocData_ = other.rebalanceLocData_;
+              bitField0_ = (bitField0_ & ~0x00002000);
+            } else {
+              ensureRebalanceLocDataIsMutable();
+              rebalanceLocData_.addAll(other.rebalanceLocData_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.rebalanceLocData_.isEmpty()) {
+            if (rebalanceLocDataBuilder_.isEmpty()) {
+              rebalanceLocDataBuilder_.dispose();
+              rebalanceLocDataBuilder_ = null;
+              rebalanceLocData_ = other.rebalanceLocData_;
+              bitField0_ = (bitField0_ & ~0x00002000);
+              rebalanceLocDataBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getRebalanceLocDataFieldBuilder() : null;
+            } else {
+              rebalanceLocDataBuilder_.addAllMessages(other.rebalanceLocData_);
+            }
+          }
+        }
+        if (rebalanceReplicDataBuilder_ == null) {
+          if (!other.rebalanceReplicData_.isEmpty()) {
+            if (rebalanceReplicData_.isEmpty()) {
+              rebalanceReplicData_ = other.rebalanceReplicData_;
+              bitField0_ = (bitField0_ & ~0x00004000);
+            } else {
+              ensureRebalanceReplicDataIsMutable();
+              rebalanceReplicData_.addAll(other.rebalanceReplicData_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.rebalanceReplicData_.isEmpty()) {
+            if (rebalanceReplicDataBuilder_.isEmpty()) {
+              rebalanceReplicDataBuilder_.dispose();
+              rebalanceReplicDataBuilder_ = null;
+              rebalanceReplicData_ = other.rebalanceReplicData_;
+              bitField0_ = (bitField0_ & ~0x00004000);
+              rebalanceReplicDataBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getRebalanceReplicDataFieldBuilder() : null;
+            } else {
+              rebalanceReplicDataBuilder_.addAllMessages(other.rebalanceReplicData_);
+            }
+          }
+        }
+        if (!other.getDeleteNodeFile().isEmpty()) {
+          deleteNodeFile_ = other.deleteNodeFile_;
+          onChanged();
+        }
+        if (!other.getBeginRebalanceNode().isEmpty()) {
+          beginRebalanceNode_ = other.beginRebalanceNode_;
+          onChanged();
+        }
+        if (fileMetaDataBuilder_ == null) {
+          if (!other.fileMetaData_.isEmpty()) {
+            if (fileMetaData_.isEmpty()) {
+              fileMetaData_ = other.fileMetaData_;
+              bitField0_ = (bitField0_ & ~0x00020000);
+            } else {
+              ensureFileMetaDataIsMutable();
+              fileMetaData_.addAll(other.fileMetaData_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.fileMetaData_.isEmpty()) {
+            if (fileMetaDataBuilder_.isEmpty()) {
+              fileMetaDataBuilder_.dispose();
+              fileMetaDataBuilder_ = null;
+              fileMetaData_ = other.fileMetaData_;
+              bitField0_ = (bitField0_ & ~0x00020000);
+              fileMetaDataBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getFileMetaDataFieldBuilder() : null;
+            } else {
+              fileMetaDataBuilder_.addAllMessages(other.fileMetaData_);
+            }
+          }
+        }
+        if (other.getIsDownload() != false) {
+          setIsDownload(other.getIsDownload());
         }
         onChanged();
         return this;
@@ -1774,6 +2374,890 @@ public final class StorageMessages {
       public Builder clearNumReplic() {
         
         numReplic_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> rebalanceLocData_ =
+        java.util.Collections.emptyList();
+      private void ensureRebalanceLocDataIsMutable() {
+        if (!((bitField0_ & 0x00002000) == 0x00002000)) {
+          rebalanceLocData_ = new java.util.ArrayList<edu.usfca.cs.dfs.StorageMessages.DataPacket>(rebalanceLocData_);
+          bitField0_ |= 0x00002000;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> rebalanceLocDataBuilder_;
+
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> getRebalanceLocDataList() {
+        if (rebalanceLocDataBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(rebalanceLocData_);
+        } else {
+          return rebalanceLocDataBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public int getRebalanceLocDataCount() {
+        if (rebalanceLocDataBuilder_ == null) {
+          return rebalanceLocData_.size();
+        } else {
+          return rebalanceLocDataBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket getRebalanceLocData(int index) {
+        if (rebalanceLocDataBuilder_ == null) {
+          return rebalanceLocData_.get(index);
+        } else {
+          return rebalanceLocDataBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder setRebalanceLocData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (rebalanceLocDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRebalanceLocDataIsMutable();
+          rebalanceLocData_.set(index, value);
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder setRebalanceLocData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (rebalanceLocDataBuilder_ == null) {
+          ensureRebalanceLocDataIsMutable();
+          rebalanceLocData_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder addRebalanceLocData(edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (rebalanceLocDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRebalanceLocDataIsMutable();
+          rebalanceLocData_.add(value);
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder addRebalanceLocData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (rebalanceLocDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRebalanceLocDataIsMutable();
+          rebalanceLocData_.add(index, value);
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder addRebalanceLocData(
+          edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (rebalanceLocDataBuilder_ == null) {
+          ensureRebalanceLocDataIsMutable();
+          rebalanceLocData_.add(builderForValue.build());
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder addRebalanceLocData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (rebalanceLocDataBuilder_ == null) {
+          ensureRebalanceLocDataIsMutable();
+          rebalanceLocData_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder addAllRebalanceLocData(
+          java.lang.Iterable<? extends edu.usfca.cs.dfs.StorageMessages.DataPacket> values) {
+        if (rebalanceLocDataBuilder_ == null) {
+          ensureRebalanceLocDataIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, rebalanceLocData_);
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder clearRebalanceLocData() {
+        if (rebalanceLocDataBuilder_ == null) {
+          rebalanceLocData_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00002000);
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public Builder removeRebalanceLocData(int index) {
+        if (rebalanceLocDataBuilder_ == null) {
+          ensureRebalanceLocDataIsMutable();
+          rebalanceLocData_.remove(index);
+          onChanged();
+        } else {
+          rebalanceLocDataBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder getRebalanceLocDataBuilder(
+          int index) {
+        return getRebalanceLocDataFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getRebalanceLocDataOrBuilder(
+          int index) {
+        if (rebalanceLocDataBuilder_ == null) {
+          return rebalanceLocData_.get(index);  } else {
+          return rebalanceLocDataBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+           getRebalanceLocDataOrBuilderList() {
+        if (rebalanceLocDataBuilder_ != null) {
+          return rebalanceLocDataBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(rebalanceLocData_);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder addRebalanceLocDataBuilder() {
+        return getRebalanceLocDataFieldBuilder().addBuilder(
+            edu.usfca.cs.dfs.StorageMessages.DataPacket.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder addRebalanceLocDataBuilder(
+          int index) {
+        return getRebalanceLocDataFieldBuilder().addBuilder(
+            index, edu.usfca.cs.dfs.StorageMessages.DataPacket.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceLocData = 14;</code>
+       */
+      public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder> 
+           getRebalanceLocDataBuilderList() {
+        return getRebalanceLocDataFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+          getRebalanceLocDataFieldBuilder() {
+        if (rebalanceLocDataBuilder_ == null) {
+          rebalanceLocDataBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder>(
+                  rebalanceLocData_,
+                  ((bitField0_ & 0x00002000) == 0x00002000),
+                  getParentForChildren(),
+                  isClean());
+          rebalanceLocData_ = null;
+        }
+        return rebalanceLocDataBuilder_;
+      }
+
+      private java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> rebalanceReplicData_ =
+        java.util.Collections.emptyList();
+      private void ensureRebalanceReplicDataIsMutable() {
+        if (!((bitField0_ & 0x00004000) == 0x00004000)) {
+          rebalanceReplicData_ = new java.util.ArrayList<edu.usfca.cs.dfs.StorageMessages.DataPacket>(rebalanceReplicData_);
+          bitField0_ |= 0x00004000;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> rebalanceReplicDataBuilder_;
+
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> getRebalanceReplicDataList() {
+        if (rebalanceReplicDataBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(rebalanceReplicData_);
+        } else {
+          return rebalanceReplicDataBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public int getRebalanceReplicDataCount() {
+        if (rebalanceReplicDataBuilder_ == null) {
+          return rebalanceReplicData_.size();
+        } else {
+          return rebalanceReplicDataBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket getRebalanceReplicData(int index) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          return rebalanceReplicData_.get(index);
+        } else {
+          return rebalanceReplicDataBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder setRebalanceReplicData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRebalanceReplicDataIsMutable();
+          rebalanceReplicData_.set(index, value);
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder setRebalanceReplicData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          ensureRebalanceReplicDataIsMutable();
+          rebalanceReplicData_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder addRebalanceReplicData(edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRebalanceReplicDataIsMutable();
+          rebalanceReplicData_.add(value);
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder addRebalanceReplicData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureRebalanceReplicDataIsMutable();
+          rebalanceReplicData_.add(index, value);
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder addRebalanceReplicData(
+          edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          ensureRebalanceReplicDataIsMutable();
+          rebalanceReplicData_.add(builderForValue.build());
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder addRebalanceReplicData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          ensureRebalanceReplicDataIsMutable();
+          rebalanceReplicData_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder addAllRebalanceReplicData(
+          java.lang.Iterable<? extends edu.usfca.cs.dfs.StorageMessages.DataPacket> values) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          ensureRebalanceReplicDataIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, rebalanceReplicData_);
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder clearRebalanceReplicData() {
+        if (rebalanceReplicDataBuilder_ == null) {
+          rebalanceReplicData_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00004000);
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public Builder removeRebalanceReplicData(int index) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          ensureRebalanceReplicDataIsMutable();
+          rebalanceReplicData_.remove(index);
+          onChanged();
+        } else {
+          rebalanceReplicDataBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder getRebalanceReplicDataBuilder(
+          int index) {
+        return getRebalanceReplicDataFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getRebalanceReplicDataOrBuilder(
+          int index) {
+        if (rebalanceReplicDataBuilder_ == null) {
+          return rebalanceReplicData_.get(index);  } else {
+          return rebalanceReplicDataBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+           getRebalanceReplicDataOrBuilderList() {
+        if (rebalanceReplicDataBuilder_ != null) {
+          return rebalanceReplicDataBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(rebalanceReplicData_);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder addRebalanceReplicDataBuilder() {
+        return getRebalanceReplicDataFieldBuilder().addBuilder(
+            edu.usfca.cs.dfs.StorageMessages.DataPacket.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder addRebalanceReplicDataBuilder(
+          int index) {
+        return getRebalanceReplicDataFieldBuilder().addBuilder(
+            index, edu.usfca.cs.dfs.StorageMessages.DataPacket.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .DataPacket rebalanceReplicData = 15;</code>
+       */
+      public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder> 
+           getRebalanceReplicDataBuilderList() {
+        return getRebalanceReplicDataFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+          getRebalanceReplicDataFieldBuilder() {
+        if (rebalanceReplicDataBuilder_ == null) {
+          rebalanceReplicDataBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder>(
+                  rebalanceReplicData_,
+                  ((bitField0_ & 0x00004000) == 0x00004000),
+                  getParentForChildren(),
+                  isClean());
+          rebalanceReplicData_ = null;
+        }
+        return rebalanceReplicDataBuilder_;
+      }
+
+      private java.lang.Object deleteNodeFile_ = "";
+      /**
+       * <code>string deleteNodeFile = 16;</code>
+       */
+      public java.lang.String getDeleteNodeFile() {
+        java.lang.Object ref = deleteNodeFile_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          deleteNodeFile_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string deleteNodeFile = 16;</code>
+       */
+      public com.google.protobuf.ByteString
+          getDeleteNodeFileBytes() {
+        java.lang.Object ref = deleteNodeFile_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          deleteNodeFile_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string deleteNodeFile = 16;</code>
+       */
+      public Builder setDeleteNodeFile(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        deleteNodeFile_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string deleteNodeFile = 16;</code>
+       */
+      public Builder clearDeleteNodeFile() {
+        
+        deleteNodeFile_ = getDefaultInstance().getDeleteNodeFile();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string deleteNodeFile = 16;</code>
+       */
+      public Builder setDeleteNodeFileBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        deleteNodeFile_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object beginRebalanceNode_ = "";
+      /**
+       * <code>string beginRebalanceNode = 17;</code>
+       */
+      public java.lang.String getBeginRebalanceNode() {
+        java.lang.Object ref = beginRebalanceNode_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          beginRebalanceNode_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string beginRebalanceNode = 17;</code>
+       */
+      public com.google.protobuf.ByteString
+          getBeginRebalanceNodeBytes() {
+        java.lang.Object ref = beginRebalanceNode_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          beginRebalanceNode_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string beginRebalanceNode = 17;</code>
+       */
+      public Builder setBeginRebalanceNode(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        beginRebalanceNode_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string beginRebalanceNode = 17;</code>
+       */
+      public Builder clearBeginRebalanceNode() {
+        
+        beginRebalanceNode_ = getDefaultInstance().getBeginRebalanceNode();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string beginRebalanceNode = 17;</code>
+       */
+      public Builder setBeginRebalanceNodeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        beginRebalanceNode_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> fileMetaData_ =
+        java.util.Collections.emptyList();
+      private void ensureFileMetaDataIsMutable() {
+        if (!((bitField0_ & 0x00020000) == 0x00020000)) {
+          fileMetaData_ = new java.util.ArrayList<edu.usfca.cs.dfs.StorageMessages.DataPacket>(fileMetaData_);
+          bitField0_ |= 0x00020000;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> fileMetaDataBuilder_;
+
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket> getFileMetaDataList() {
+        if (fileMetaDataBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(fileMetaData_);
+        } else {
+          return fileMetaDataBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public int getFileMetaDataCount() {
+        if (fileMetaDataBuilder_ == null) {
+          return fileMetaData_.size();
+        } else {
+          return fileMetaDataBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket getFileMetaData(int index) {
+        if (fileMetaDataBuilder_ == null) {
+          return fileMetaData_.get(index);
+        } else {
+          return fileMetaDataBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder setFileMetaData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (fileMetaDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFileMetaDataIsMutable();
+          fileMetaData_.set(index, value);
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder setFileMetaData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (fileMetaDataBuilder_ == null) {
+          ensureFileMetaDataIsMutable();
+          fileMetaData_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder addFileMetaData(edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (fileMetaDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFileMetaDataIsMutable();
+          fileMetaData_.add(value);
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder addFileMetaData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket value) {
+        if (fileMetaDataBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFileMetaDataIsMutable();
+          fileMetaData_.add(index, value);
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder addFileMetaData(
+          edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (fileMetaDataBuilder_ == null) {
+          ensureFileMetaDataIsMutable();
+          fileMetaData_.add(builderForValue.build());
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder addFileMetaData(
+          int index, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder builderForValue) {
+        if (fileMetaDataBuilder_ == null) {
+          ensureFileMetaDataIsMutable();
+          fileMetaData_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder addAllFileMetaData(
+          java.lang.Iterable<? extends edu.usfca.cs.dfs.StorageMessages.DataPacket> values) {
+        if (fileMetaDataBuilder_ == null) {
+          ensureFileMetaDataIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, fileMetaData_);
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder clearFileMetaData() {
+        if (fileMetaDataBuilder_ == null) {
+          fileMetaData_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00020000);
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public Builder removeFileMetaData(int index) {
+        if (fileMetaDataBuilder_ == null) {
+          ensureFileMetaDataIsMutable();
+          fileMetaData_.remove(index);
+          onChanged();
+        } else {
+          fileMetaDataBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder getFileMetaDataBuilder(
+          int index) {
+        return getFileMetaDataFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder getFileMetaDataOrBuilder(
+          int index) {
+        if (fileMetaDataBuilder_ == null) {
+          return fileMetaData_.get(index);  } else {
+          return fileMetaDataBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public java.util.List<? extends edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+           getFileMetaDataOrBuilderList() {
+        if (fileMetaDataBuilder_ != null) {
+          return fileMetaDataBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(fileMetaData_);
+        }
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder addFileMetaDataBuilder() {
+        return getFileMetaDataFieldBuilder().addBuilder(
+            edu.usfca.cs.dfs.StorageMessages.DataPacket.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder addFileMetaDataBuilder(
+          int index) {
+        return getFileMetaDataFieldBuilder().addBuilder(
+            index, edu.usfca.cs.dfs.StorageMessages.DataPacket.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .DataPacket fileMetaData = 18;</code>
+       */
+      public java.util.List<edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder> 
+           getFileMetaDataBuilderList() {
+        return getFileMetaDataFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder> 
+          getFileMetaDataFieldBuilder() {
+        if (fileMetaDataBuilder_ == null) {
+          fileMetaDataBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              edu.usfca.cs.dfs.StorageMessages.DataPacket, edu.usfca.cs.dfs.StorageMessages.DataPacket.Builder, edu.usfca.cs.dfs.StorageMessages.DataPacketOrBuilder>(
+                  fileMetaData_,
+                  ((bitField0_ & 0x00020000) == 0x00020000),
+                  getParentForChildren(),
+                  isClean());
+          fileMetaData_ = null;
+        }
+        return fileMetaDataBuilder_;
+      }
+
+      private boolean isDownload_ ;
+      /**
+       * <code>bool isDownload = 19;</code>
+       */
+      public boolean getIsDownload() {
+        return isDownload_;
+      }
+      /**
+       * <code>bool isDownload = 19;</code>
+       */
+      public Builder setIsDownload(boolean value) {
+        
+        isDownload_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool isDownload = 19;</code>
+       */
+      public Builder clearIsDownload() {
+        
+        isDownload_ = false;
         onChanged();
         return this;
       }
@@ -2496,18 +3980,25 @@ public final class StorageMessages {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\026storage_messages.proto\"\327\002\n\nDataPacket\022" +
+      "\n\026storage_messages.proto\"\361\004\n\nDataPacket\022" +
       "$\n\004type\030\001 \001(\0162\026.DataPacket.packetType\022\020\n" +
       "\010fileName\030\002 \001(\t\022\020\n\010numChunk\030\003 \001(\005\022\017\n\007chu" +
       "nkId\030\004 \001(\005\022\014\n\004data\030\005 \001(\014\022\017\n\007is_last\030\006 \001(" +
       "\010\022\r\n\005usage\030\007 \001(\005\022\022\n\nrequestNum\030\010 \001(\005\022\033\n\010" +
       "nodeList\030\t \003(\0132\t.NodeHash\022\014\n\004host\030\n \001(\t\022" +
       "\014\n\004port\030\013 \001(\005\022\020\n\010isReplic\030\014 \001(\010\022\021\n\tnumRe" +
-      "plic\030\r \001(\005\"N\n\npacketType\022\013\n\007REQUEST\020\000\022\014\n" +
-      "\010DOWNLOAD\020\001\022\010\n\004DATA\020\002\022\r\n\tHEARTBEAT\020\003\022\014\n\010" +
-      "NODELIST\020\004\"-\n\010NodeHash\022\017\n\007hashVal\030\001 \001(\t\022",
-      "\020\n\010hostPort\030\002 \001(\tB\022\n\020edu.usfca.cs.dfsb\006p" +
-      "roto3"
+      "plic\030\r \001(\005\022%\n\020rebalanceLocData\030\016 \003(\0132\013.D" +
+      "ataPacket\022(\n\023rebalanceReplicData\030\017 \003(\0132\013" +
+      ".DataPacket\022\026\n\016deleteNodeFile\030\020 \001(\t\022\032\n\022b",
+      "eginRebalanceNode\030\021 \001(\t\022!\n\014fileMetaData\030" +
+      "\022 \003(\0132\013.DataPacket\022\022\n\nisDownload\030\023 \001(\010\"\253" +
+      "\001\n\npacketType\022\013\n\007REQUEST\020\000\022\014\n\010DOWNLOAD\020\001" +
+      "\022\010\n\004DATA\020\002\022\r\n\tHEARTBEAT\020\003\022\014\n\010NODELIST\020\004\022" +
+      "\r\n\tREBALANCE\020\005\022\022\n\016DELETE_BY_NODE\020\006\022\026\n\022DE" +
+      "LETE_BY_FILENAME\020\007\022\021\n\rREBALANCE_ACK\020\010\022\r\n" +
+      "\tFILE_META\020\t\"-\n\010NodeHash\022\017\n\007hashVal\030\001 \001(" +
+      "\t\022\020\n\010hostPort\030\002 \001(\tB\022\n\020edu.usfca.cs.dfsb" +
+      "\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2526,7 +4017,7 @@ public final class StorageMessages {
     internal_static_DataPacket_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_DataPacket_descriptor,
-        new java.lang.String[] { "Type", "FileName", "NumChunk", "ChunkId", "Data", "IsLast", "Usage", "RequestNum", "NodeList", "Host", "Port", "IsReplic", "NumReplic", });
+        new java.lang.String[] { "Type", "FileName", "NumChunk", "ChunkId", "Data", "IsLast", "Usage", "RequestNum", "NodeList", "Host", "Port", "IsReplic", "NumReplic", "RebalanceLocData", "RebalanceReplicData", "DeleteNodeFile", "BeginRebalanceNode", "FileMetaData", "IsDownload", });
     internal_static_NodeHash_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_NodeHash_fieldAccessorTable = new

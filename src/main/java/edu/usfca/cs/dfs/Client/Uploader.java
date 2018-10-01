@@ -70,7 +70,7 @@ public class Uploader extends FileManager implements Runnable {
             InetAddress ip = InetAddress.getByName(NODE_HOST);
             connectionSocket = new Socket(ip, NODE_PORT);
             connectionSocket.setSoTimeout(timeout);
-            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setFileName(filename).setNumChunk(blockcount+1).build();
+            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setIsDownload(false).setFileName(filename).setNumChunk(blockcount+1).build();
             OutputStream outstream = connectionSocket.getOutputStream();
             helloMessage.writeDelimitedTo(outstream);
             /**

@@ -9,9 +9,10 @@ import java.util.concurrent.TimeUnit;
 
 public class StorageNode {
     public static String HOST = "localhost";
-    public static int PORT = 8200;
+    public static int PORT = 8300;
     public static String COORDINATOR_HOST = "localhost";
     public static int COORDINATOR_PORT = 7000;
+    public static String HOSTPORT;
 
     public static boolean isDebug = false;
     public static volatile boolean isShutdown = false;
@@ -28,9 +29,9 @@ public class StorageNode {
     throws Exception {
         String hostname = getHostname();
         System.out.println("Starting storage node on " + hostname + "...");
+        HOSTPORT = HOST+":"+PORT;
         StorageNode sn = new StorageNode();
         sn.startPlay();
-
     }
 
     /**

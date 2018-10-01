@@ -10,13 +10,14 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.sql.Timestamp;
+
 import static edu.usfca.cs.dfs.Client.Client.*;
 
 
 /**
  * Provides base functionality to all servlets.
  */
-public class FileManager  {
+public class FileManager {
 
     public byte[] imageToBytes(String path) throws IOException {
         // open image
@@ -80,7 +81,7 @@ public class FileManager  {
     private Socket connectionSocket;
 //    private int timeout = 1000;
 
-    public void sendData (String hostport, StorageMessages.DataPacket message){
+    public void sendData(String hostport, StorageMessages.DataPacket message) {
         try {
             String[] address = hostport.split(":");
             InetAddress ip = InetAddress.getByName(address[0]);
@@ -90,13 +91,12 @@ public class FileManager  {
             OutputStream outstream = connectionSocket.getOutputStream();
             message.writeDelimitedTo(outstream);
             connectionSocket.close();
-        }catch (Exception e)
-        {
-            System.out.println("Coordinator failed");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public StorageMessages.DataPacket sendRequest (String hostport, StorageMessages.DataPacket message){
+    public StorageMessages.DataPacket sendRequest(String hostport, StorageMessages.DataPacket message) {
         try {
             /**
              * Send self info and receive nodes and file detail info
@@ -115,9 +115,8 @@ public class FileManager  {
             StorageMessages.DataPacket nodeListMessage = StorageMessages.DataPacket.getDefaultInstance();
             nodeListMessage = nodeListMessage.parseDelimitedFrom(instream);
             return nodeListMessage;
-        }catch (Exception e)
-        {
-            System.out.println("Coordinator failed");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

@@ -30,6 +30,7 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
             while (!isShutdown) {
                 Socket connectionSocket = welcomingSocket.accept();
                 InputStream instream = connectionSocket.getInputStream();
+                OutputStream outstream = connectionSocket.getOutputStream();
                 StorageMessages.DataPacket heartBeatMessage = StorageMessages.DataPacket.getDefaultInstance();
                 heartBeatMessage = heartBeatMessage.parseDelimitedFrom(instream);
                 if (heartBeatMessage.getType() == StorageMessages.DataPacket.packetType.HEARTBEAT)
@@ -50,6 +51,14 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                          * Send replication of node map to All datanodes
                          */
                         nm.BcastAllNode();
+                        /**
+                         * Begin re-balance process,
+                         */
+                        System.out.println("begin re-balance");
+                        StorageMessages.DataPacket reBalance = StorageMessages.DataPacket.newBuilder().setType(StorageMessages.DataPacket.packetType.REBALANCE).setBeginRebalanceNode(hostport).build();
+                        sendSomthing(hostport,reBalance);
+//                        reBalance.writeDelimitedTo(outstream);
+                        connectionSocket.close();
                     }
                     else {
                         /**
@@ -58,7 +67,6 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                         System.out.println("Already have this node in list");
                         System.out.println("Update TimeStamp to " + hbm.getTimeStamp(hostport));
                     }
-
 
                 }
 

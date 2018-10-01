@@ -27,10 +27,10 @@ public class HeartBeatMessage extends Connection implements Runnable {
             if (!isShutdown)
             {
                 String hostPort = COORDINATOR_HOST+":"+COORDINATOR_PORT;
-                System.out.println(hostPort);
+//                System.out.println(hostPort);
                 StorageMessages.DataPacket heartBeatMessage = StorageMessages.DataPacket.newBuilder().setType(HEARTBEAT).setHost(HOST).setPort(PORT).setRequestNum(NumRequest).setUsage(USAGE).build();
                 sendSomthing(hostPort, heartBeatMessage);
-                System.out.println("Send a heartbeat");
+//                System.out.println("Send a heartbeat");
             }
         }
         catch (Exception e)

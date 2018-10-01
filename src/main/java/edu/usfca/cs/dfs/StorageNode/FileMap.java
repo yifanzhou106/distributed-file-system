@@ -159,5 +159,77 @@ public class FileMap {
         return replicChunk;
     }
 
+    public StorageMessages.DataPacket buildLocalDataPacket (String leaderHashVal){
+        filemaplock.readLock().lock();
+        try{
+            StorageMessages.DataPacket.Builder rebalanceFilePacket = StorageMessages.DataPacket.newBuilder();
+
+            for (Map.Entry<String, TreeMap<Integer, StorageMessages.DataPacket>> entry: localFileMap.entrySet()){
+                filePieces =entry.getValue();
+
+                if (leaderHashVal.compareTo(entry.getKey()) >0 )
+                {
+                    for (Map.Entry<Integer, StorageMessages.DataPacket> fileChunk : filePieces.entrySet())
+                    {
+                        rebalanceFilePacket.addRebalanceLocData(fileChunk.getValue());
+                    }
+                } else{
+                    for (Map.Entry<Integer, StorageMessages.DataPacket> fileChunk : filePieces.entrySet())
+                    {
+                        rebalanceFilePacket.addRebalanceReplicData(fileChunk.getValue());
+                    }
+                }
+            }
+
+            return rebalanceFilePacket.setHost(HOST).setPort(PORT).build();
+        }finally {
+            filemaplock.readLock().unlock();
+
+        }
+    }
+
+    public void storeRebalanceFile (StorageMessages.DataPacket filelist){
+        filemaplock.writeLock().lock();
+        replicFilemaplock.writeLock().lock();
+        try{
+            StorageMessages.DataPacket fileChunk;
+                if (filelist.getRebalanceLocDataList().size()!=0)
+                {
+                    for (int i = 0; i< filelist.getRebalanceLocDataList().size();i++)
+                    {
+                        fileChunk = filelist.getRebalanceLocDataList().get(i);
+                        addFile(fileChunk.getFileName(),fileChunk.getChunkId(),fileChunk);
+                    }
+                }
+                if (filelist.getRebalanceReplicDataList().size()!=0)
+                {
+                    String hostport = filelist.getHost()+":"+filelist.getPort();
+                    for (int i = 0; i< filelist.getRebalanceLocDataList().size();i++)
+                    {
+                        fileChunk = filelist.getRebalanceLocDataList().get(i);
+                        addReplic(hostport,fileChunk.getFileName(),fileChunk);
+                    }
+                }
+            System.out.println(localFileMap);
+            System.out.println(replicFileMap);
+        }finally {
+            filemaplock.writeLock().unlock();
+            replicFilemaplock.writeLock().unlock();
+        }
+    }
+    public void removeReplicationByNode(String hostport)
+    {
+        replicFilemaplock.writeLock().lock();
+        try{
+                if (replicFileMap.containsKey(hostport))
+                {
+                    replicFileMap.remove(replicFileMap);
+                }else {
+                    System.out.println("I do not have this file");
+                }
+        }finally {
+            replicFilemaplock.writeLock().unlock();
+        }
+    }
 
 }

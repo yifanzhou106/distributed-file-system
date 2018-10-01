@@ -37,7 +37,7 @@ public class Downloader extends FileManager implements Runnable {
 
             InetAddress ip = InetAddress.getByName(NODE_HOST);
             String hostPort =  NODE_HOST+":" +NODE_PORT;
-            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setFileName(filename).build();
+            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setIsDownload(true).setFileName(filename).build();
             StorageMessages.DataPacket nodeListMessage =  sendRequest(hostPort,helloMessage);
             List nodeList =  nodeListMessage.getNodeListList();
             System.out.println(nodeList);
