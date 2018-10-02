@@ -79,6 +79,13 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                      * Update file Metadata map
                      */
                     nm.updateFileMeta(requestMessage);
+                } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.UPDATE_REPLICATION) {
+                    /**
+                     * Update replication map
+                     */
+                    System.out.println("Updating Replication Map");
+                    System.out.println(requestMessage);
+                    fm.storeRebalanceFile(requestMessage);
                 }
 
             }
@@ -186,61 +193,120 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
     }
 
     public void ifRebalance(Socket connectionSocket, StorageMessages.DataPacket requestMessage) throws IOException {
-        System.out.println("Re_balance, I'm the leader " + HOSTPORT);
         String nextNode = nm.getNextNode(HOSTPORT);
         String nextnextNode = nm.getNextNode(nextNode);
         String preNode = nm.getPreNode(HOSTPORT);
         String prepreNode = nm.getPreNode(preNode);
+        if (!requestMessage.getIsBroken()) {
+            System.out.println("New node Re_balance, I'm the leader " + HOSTPORT);
 
-        /**
-         * This is a begin node.
-         * ask next node for local date as replication
-         */
-        StorageMessages.DataPacket request = StorageMessages.DataPacket.newBuilder().setType(REBALANCE_ACK).setBeginRebalanceNode(HOSTPORT).build();
-        ;
-        StorageMessages.DataPacket replicData;
-        System.out.println("next node: " + nextNode);
-        if (!nextNode.equals(HOSTPORT)) {
-            System.out.println("1. ask next node for local date as replication");
-            replicData = sendRequest(nextNode, request);
-            System.out.println(replicData);
-            if (replicData != null)
-                fm.storeRebalanceFile(replicData);
-            System.out.println("Completed");
-        }
-        /**
-         * ask next next node's local date as replication
-         */
-        System.out.println("next next node: " + nextnextNode);
+            /**
+             * This is a begin node.
+             * ask next node for local date as replication
+             */
+            StorageMessages.DataPacket request = StorageMessages.DataPacket.newBuilder().setType(REBALANCE_ACK).setIsBroken(false).setBeginRebalanceNode(HOSTPORT).build();
 
-        if (!nextnextNode.equals(HOSTPORT)) {
-            System.out.println("2. ask next next node's local date as replication");
-            replicData = sendRequest(nextnextNode, request);
-            System.out.println(replicData);
-            if (replicData != null)
-                fm.storeRebalanceFile(replicData);
-            System.out.println("Completed");
-        }
-        /**
-         * ask pre node delete next next node replication
-         */
-        if (!preNode.equals(HOSTPORT)) {
-            System.out.println("3. ask pre node delete next next node replication");
-            StorageMessages.DataPacket deleteReplication = StorageMessages.DataPacket.newBuilder().setType(DELETE_BY_NODE).setDeleteNodeFile(nextnextNode).build();
-            sendSomthing(preNode, deleteReplication);
-            System.out.println("Completed");
-        }
-        /**
-         * ask pre pre node delete next node replication
-         */
-        if (!preNode.equals(HOSTPORT)) {
+            StorageMessages.DataPacket replicData;
+            System.out.println("next node: " + nextNode);
+            if (!nextNode.equals(HOSTPORT)) {
+                System.out.println("1. ask next node for local date as replication");
+                replicData = sendRequest(nextNode, request);
+                System.out.println(replicData);
+                if (replicData != null)
+                    fm.storeRebalanceFile(replicData);
+                System.out.println("Completed");
+            }
+            /**
+             * ask next next node's local date as replication
+             */
+            System.out.println("next next node: " + nextnextNode);
 
-            System.out.println("4. ask pre pre node delete next node replication");
-            StorageMessages.DataPacket deleteReplication = StorageMessages.DataPacket.newBuilder().setType(DELETE_BY_NODE).setDeleteNodeFile(nextNode).build();
-            sendSomthing(prepreNode, deleteReplication);
+            if (!nextnextNode.equals(HOSTPORT)) {
+                System.out.println("2. ask next next node's local date as replication");
+                replicData = sendRequest(nextnextNode, request);
+                System.out.println(replicData);
+                if (replicData != null)
+                    fm.storeRebalanceFile(replicData);
+                System.out.println("Completed");
+            }
+            /**
+             * ask pre node delete next next node replication
+             */
+            if (!preNode.equals(HOSTPORT)) {
+                System.out.println("3. ask pre node " + preNode + " delete next next node replication");
+                StorageMessages.DataPacket deleteReplication = StorageMessages.DataPacket.newBuilder().setType(DELETE_BY_NODE).setDeleteNodeFile(nextnextNode).build();
+                sendSomthing(preNode, deleteReplication);
+                System.out.println("Completed");
+            }
+            /**
+             * ask pre pre node delete next node replication
+             */
+            if (!prepreNode.equals(HOSTPORT)) {
+
+                System.out.println("4. ask pre pre node " + prepreNode + " delete next node replication");
+                StorageMessages.DataPacket deleteReplication = StorageMessages.DataPacket.newBuilder().setType(DELETE_BY_NODE).setDeleteNodeFile(nextNode).build();
+                sendSomthing(prepreNode, deleteReplication);
+                System.out.println("Completed");
+                connectionSocket.close();
+            }
+        } else {
+            /**
+             * Ask nextnextnode send local data as replication
+             */
+
+            System.out.println("Broken node Re_balance, I'm the leader " + HOSTPORT);
+
+            String brokenNode = requestMessage.getDeleteNodeFile();
+            StorageMessages.DataPacket request = StorageMessages.DataPacket.newBuilder().setType(REBALANCE_ACK).setIsBroken(true).setBeginRebalanceNode(HOSTPORT).build();
+
+            StorageMessages.DataPacket replicData;
+            System.out.println("nextnext node: " + nextnextNode);
+            if (!nextnextNode.equals(HOSTPORT)) {
+                System.out.println("1. Ask nextnextnode for local data as replication");
+                replicData = sendRequest(nextnextNode, request);
+                System.out.println("Receive *********\n" + replicData);
+                if (replicData.getRebalanceReplicDataList() != null)
+                    fm.storeRebalanceFile(replicData);
+                System.out.println("Completed");
+            }
+
+            /**
+             * send nextnode local data to prenode as replication (find replication in replicMap and send directly)
+             */
+            if (!preNode.equals(HOSTPORT)) {
+                System.out.println("2. send nextnode " + nextNode + " to update prenode's " + preNode + " replication(find replication in replicMap and send directly)");
+
+                StorageMessages.DataPacket rebalanceFilePacket = fm.buildNextReplicationPacket(nextNode, brokenNode);
+                System.out.println("rebalanceFilePacket built success");
+                sendSomthing(preNode, rebalanceFilePacket);
+                System.out.println("Completed");
+            }
+
+            /**
+             * move broken node replication to local data map and delete it from replication
+             */
+            System.out.println("3. move broken node replication to local data map and delete it from replication");
+            fm.moveReplicationToLocal(brokenNode);
             System.out.println("Completed");
-            connectionSocket.close();
+
+            /**
+             * send localdate to preprenode and prenode as replication, if there is broken node replications, just delete
+             */
+            System.out.println("4. send localdate to preprenode and prenode as replication, if there is broken node replications, just delete");
+            StorageMessages.DataPacket rebalanceFilePacket = fm.buildLocalReplicationPacket(brokenNode);
+            sendSomthing(preNode, rebalanceFilePacket);
+            sendSomthing(prepreNode, rebalanceFilePacket);
+            System.out.println("Completed");
+
+            /**
+             * Update file Metadata map and broadcast
+             */
+            System.out.println("5. Update file Metadata map and broadcast");
+            nm.remapMetadata(brokenNode, HOSTPORT);
+            System.out.println("Completed");
+
         }
+
 
     }
 

@@ -11,11 +11,11 @@ public class Connection {
     private Socket connectionSocket;
 //    private int timeout = 1000;
 
-    public void sendSomthing (String hostport, StorageMessages.DataPacket message){
+    public void sendSomthing(String hostport, StorageMessages.DataPacket message) {
         try {
             String[] address = hostport.split(":");
             InetAddress ip = InetAddress.getByName(address[0]);
-            System.out.println(ip);
+//            System.out.println(ip);
 
             int port = Integer.parseInt(address[1]);
             connectionSocket = new Socket(ip, port);
@@ -23,8 +23,8 @@ public class Connection {
             OutputStream outstream = connectionSocket.getOutputStream();
             message.writeDelimitedTo(outstream);
             connectionSocket.close();
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
+            System.out.println("Send something error");
             e.printStackTrace();
         }
 

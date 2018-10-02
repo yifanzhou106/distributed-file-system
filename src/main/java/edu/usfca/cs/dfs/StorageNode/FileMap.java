@@ -4,12 +4,15 @@ package edu.usfca.cs.dfs.StorageNode;
 import edu.usfca.cs.dfs.StorageMessages;
 
 import java.io.ByteArrayOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static edu.usfca.cs.dfs.StorageMessages.DataPacket.packetType.DATA;
+import static edu.usfca.cs.dfs.StorageMessages.DataPacket.packetType.UPDATE_REPLICATION;
 import static edu.usfca.cs.dfs.StorageNode.StorageNode.*;
 
 /**
@@ -129,107 +132,187 @@ public class FileMap {
      * @param filename
      * @return
      */
-    public int getPieceNum(String filename){
+    public int getPieceNum(String filename) {
         filemaplock.readLock().lock();
-        try{
+        try {
             filePieces = localFileMap.get(filename);
             return filePieces.size();
-        }finally {
+        } finally {
             filemaplock.readLock().unlock();
 
         }
     }
 
-    public Boolean isFileExist (String filename)
-    {
+    public Boolean isFileExist(String filename) {
         filemaplock.readLock().lock();
-        try{
+        try {
             return localFileMap.containsKey(filename);
-        }finally {
+        } finally {
             filemaplock.readLock().unlock();
 
         }
     }
 
-    public StorageMessages.DataPacket rebuildReplicChunk (StorageMessages.DataPacket receiveMessage)
-    {
+    public StorageMessages.DataPacket rebuildReplicChunk(StorageMessages.DataPacket receiveMessage) {
         int chunkId = receiveMessage.getChunkId();
         String filename = receiveMessage.getFileName();
         StorageMessages.DataPacket replicChunk = StorageMessages.DataPacket.newBuilder().setType(DATA).setIsReplic(true).setChunkId(chunkId).setFileName(filename).setData(receiveMessage.getData()).setHost(HOST).setPort(PORT).build();
         return replicChunk;
     }
 
-    public StorageMessages.DataPacket buildLocalDataPacket (String leaderHashVal){
+    public StorageMessages.DataPacket buildLocalDataPacket(String leaderHashVal) {
         filemaplock.readLock().lock();
-        try{
+        try {
             StorageMessages.DataPacket.Builder rebalanceFilePacket = StorageMessages.DataPacket.newBuilder();
 
-            for (Map.Entry<String, TreeMap<Integer, StorageMessages.DataPacket>> entry: localFileMap.entrySet()){
-                filePieces =entry.getValue();
+            for (Map.Entry<String, TreeMap<Integer, StorageMessages.DataPacket>> entry : localFileMap.entrySet()) {
+                filePieces = entry.getValue();
 
-                if (leaderHashVal.compareTo(entry.getKey()) >0 )
-                {
-                    for (Map.Entry<Integer, StorageMessages.DataPacket> fileChunk : filePieces.entrySet())
-                    {
+                if (leaderHashVal.compareTo(fileToSha1(entry.getKey())) > 0) {
+                    for (Map.Entry<Integer, StorageMessages.DataPacket> fileChunk : filePieces.entrySet()) {
                         rebalanceFilePacket.addRebalanceLocData(fileChunk.getValue());
                     }
-                } else{
-                    for (Map.Entry<Integer, StorageMessages.DataPacket> fileChunk : filePieces.entrySet())
-                    {
+                } else {
+                    for (Map.Entry<Integer, StorageMessages.DataPacket> fileChunk : filePieces.entrySet()) {
                         rebalanceFilePacket.addRebalanceReplicData(fileChunk.getValue());
                     }
                 }
             }
 
             return rebalanceFilePacket.setHost(HOST).setPort(PORT).build();
-        }finally {
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } finally {
             filemaplock.readLock().unlock();
 
         }
+        return null;
     }
 
-    public void storeRebalanceFile (StorageMessages.DataPacket filelist){
+    public StorageMessages.DataPacket buildLocalReplicationPacket(String brokenNode) {
+        filemaplock.readLock().lock();
+        replicFilemaplock.readLock().lock();
+        try {
+            StorageMessages.DataPacket.Builder rebalanceFilePacket = StorageMessages.DataPacket.newBuilder();
+
+            for (Map.Entry<String, TreeMap<Integer, StorageMessages.DataPacket>> entry : localFileMap.entrySet()) {
+                filePieces = entry.getValue();
+                /**
+                 * node local data
+                 */
+                for (Map.Entry<Integer, StorageMessages.DataPacket> fileChunk : filePieces.entrySet()) {
+                    rebalanceFilePacket.addRebalanceReplicData(fileChunk.getValue());
+                }
+
+            }
+            return rebalanceFilePacket.setHostport(HOSTPORT).setType(UPDATE_REPLICATION).setDeleteNodeFile(brokenNode).build();
+        } finally {
+            filemaplock.readLock().unlock();
+            replicFilemaplock.readLock().unlock();
+        }
+    }
+
+    public StorageMessages.DataPacket buildNextReplicationPacket(String nextnode, String brokenNode) {
+        filemaplock.readLock().lock();
+        replicFilemaplock.readLock().lock();
+        try {
+            StorageMessages.DataPacket.Builder rebalanceFilePacket = StorageMessages.DataPacket.newBuilder();
+            System.out.println("In buildNextReplicationPacket");
+
+            /**
+             * next node local data
+             */
+            replicPieces = replicFileMap.get(nextnode);
+            System.out.println("replicPieces " + replicPieces);
+            if (replicPieces != null)
+                for (Map.Entry<String, StorageMessages.DataPacket> fileChunk : replicPieces.entrySet()) {
+                    rebalanceFilePacket.addRebalanceReplicData(fileChunk.getValue());
+                }
+
+            return rebalanceFilePacket.setHostport(nextnode).setType(UPDATE_REPLICATION).setDeleteNodeFile(brokenNode).build();
+        } finally {
+            filemaplock.readLock().unlock();
+            replicFilemaplock.readLock().unlock();
+        }
+    }
+
+
+    public void storeRebalanceFile(StorageMessages.DataPacket filelist) {
         filemaplock.writeLock().lock();
         replicFilemaplock.writeLock().lock();
-        try{
+        try {
             StorageMessages.DataPacket fileChunk;
-                if (filelist.getRebalanceLocDataList().size()!=0)
-                {
-                    for (int i = 0; i< filelist.getRebalanceLocDataList().size();i++)
-                    {
-                        fileChunk = filelist.getRebalanceLocDataList().get(i);
-                        addFile(fileChunk.getFileName(),fileChunk.getChunkId(),fileChunk);
-                    }
+            if (filelist.getRebalanceLocDataList().size() != 0) {
+                for (int i = 0; i < filelist.getRebalanceLocDataList().size(); i++) {
+                    fileChunk = filelist.getRebalanceLocDataList().get(i);
+                    addFile(fileChunk.getFileName(), fileChunk.getChunkId(), fileChunk);
                 }
-                if (filelist.getRebalanceReplicDataList().size()!=0)
-                {
-                    String hostport = filelist.getHost()+":"+filelist.getPort();
-                    for (int i = 0; i< filelist.getRebalanceLocDataList().size();i++)
-                    {
-                        fileChunk = filelist.getRebalanceLocDataList().get(i);
-                        addReplic(hostport,fileChunk.getFileName(),fileChunk);
-                    }
+            }
+            if (filelist.getRebalanceReplicDataList().size() != 0) {
+                String hostport = filelist.getHostport();
+                if (replicFileMap.containsKey(hostport))
+                    replicFileMap.remove(hostport);
+                for (int i = 0; i < filelist.getRebalanceReplicDataList().size(); i++) {
+                    fileChunk = filelist.getRebalanceReplicDataList().get(i);
+                    addReplic(hostport, fileChunk.getFileName(), fileChunk);
                 }
-            System.out.println(localFileMap);
-            System.out.println(replicFileMap);
-        }finally {
+            }
+            if (filelist.getDeleteNodeFile() != null)
+                removeReplicationByNode(filelist.getDeleteNodeFile());
+
+
+        } finally {
             filemaplock.writeLock().unlock();
             replicFilemaplock.writeLock().unlock();
         }
     }
-    public void removeReplicationByNode(String hostport)
-    {
+
+    public void removeReplicationByNode(String hostport) {
         replicFilemaplock.writeLock().lock();
-        try{
-                if (replicFileMap.containsKey(hostport))
-                {
-                    replicFileMap.remove(replicFileMap);
-                }else {
-                    System.out.println("I do not have this file");
-                }
-        }finally {
+        try {
+            if (replicFileMap.containsKey(hostport)) {
+                replicFileMap.remove(hostport);
+
+                System.out.println("****************************Replication Map Now");
+                System.out.println(replicFileMap);
+                System.out.println("****************************End Replication Map");
+            } else {
+                System.out.println("I do not have this file replication");
+            }
+        } finally {
             replicFilemaplock.writeLock().unlock();
         }
+    }
+
+    public void moveReplicationToLocal(String hostport) {
+        replicFilemaplock.writeLock().lock();
+        try {
+
+            if (replicFileMap.containsKey(hostport)) {
+                replicPieces = replicFileMap.get(hostport);
+                for (Map.Entry<String, StorageMessages.DataPacket> entry : replicPieces.entrySet()) {
+                    StorageMessages.DataPacket fileChunk = entry.getValue();
+                    addFile(entry.getKey(), fileChunk.getChunkId(), fileChunk);
+                }
+                removeReplicationByNode(hostport);
+            } else {
+                System.out.println("I do not have this node file");
+            }
+        } finally {
+            replicFilemaplock.writeLock().unlock();
+        }
+
+    }
+
+
+    public String fileToSha1(String input) throws NoSuchAlgorithmException {
+        MessageDigest mDigest = MessageDigest.getInstance("SHA1");
+        byte[] result = mDigest.digest(input.getBytes());
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < result.length; i++) {
+            sb.append(Integer.toString((result[i] & 0xff) + 0x100, 16).substring(1));
+        }
+        return sb.toString();
     }
 
 }

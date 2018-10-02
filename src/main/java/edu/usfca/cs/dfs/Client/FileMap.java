@@ -100,12 +100,12 @@ public class FileMap {
      * @param filename
      * @return
      */
-    public int getPieceNum(String filename){
+    public int getPieceNum(String filename) {
         filemaplock.readLock().lock();
-        try{
+        try {
             filePieces = filemap.get(filename);
             return filePieces.size();
-        }finally {
+        } finally {
             filemaplock.readLock().unlock();
 
         }

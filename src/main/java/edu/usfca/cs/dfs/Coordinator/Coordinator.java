@@ -26,9 +26,9 @@ public class Coordinator {
 
     }
 
-    public void startPlay (){
-        heartBeatService.scheduleAtFixedRate(hbm,0,10000, TimeUnit.MILLISECONDS);
-        threads.submit(new ReceiveMessageWorker(threads,nm,hbm));
+    public void startPlay() {
+        heartBeatService.scheduleAtFixedRate(hbm, 0, 10000, TimeUnit.MILLISECONDS);
+        threads.submit(new ReceiveMessageWorker(threads, nm, hbm));
 
     }
 

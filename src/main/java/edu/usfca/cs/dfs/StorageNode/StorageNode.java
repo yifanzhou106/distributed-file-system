@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 public class StorageNode {
     public static String HOST = "localhost";
-    public static int PORT = 8300;
+    public static int PORT = 8400;
     public static String COORDINATOR_HOST = "localhost";
     public static int COORDINATOR_PORT = 7000;
     public static String HOSTPORT;
@@ -25,11 +25,11 @@ public class StorageNode {
     final ScheduledExecutorService heartBeatService = Executors.newSingleThreadScheduledExecutor();
     final ExecutorService threads = Executors.newFixedThreadPool(4);
 
-    public static void main(String[] args) 
-    throws Exception {
+    public static void main(String[] args)
+            throws Exception {
         String hostname = getHostname();
         System.out.println("Starting storage node on " + hostname + "...");
-        HOSTPORT = HOST+":"+PORT;
+        HOSTPORT = HOST + ":" + PORT;
         StorageNode sn = new StorageNode();
         sn.startPlay();
     }
@@ -40,13 +40,13 @@ public class StorageNode {
      * @return name of the current host
      */
     private static String getHostname()
-    throws UnknownHostException {
+            throws UnknownHostException {
         return InetAddress.getLocalHost().getHostName();
     }
 
-    public void startPlay (){
-        heartBeatService.scheduleAtFixedRate(hbm,0,5000, TimeUnit.MILLISECONDS);
-        threads.submit(new ReceiveMessageWorker(threads,fm,nm));
+    public void startPlay() {
+        heartBeatService.scheduleAtFixedRate(hbm, 0, 5000, TimeUnit.MILLISECONDS);
+        threads.submit(new ReceiveMessageWorker(threads, fm, nm));
 
     }
 

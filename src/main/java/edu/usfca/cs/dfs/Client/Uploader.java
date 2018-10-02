@@ -24,7 +24,6 @@ public class Uploader extends FileManager implements Runnable {
     private int timeout = 1000;
 
 
-
     public Uploader(ExecutorService threads, FileMap fm, String filelocation) {
         this.threads = threads;
         this.filelocation = filelocation;
@@ -70,7 +69,7 @@ public class Uploader extends FileManager implements Runnable {
             InetAddress ip = InetAddress.getByName(NODE_HOST);
             connectionSocket = new Socket(ip, NODE_PORT);
             connectionSocket.setSoTimeout(timeout);
-            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setIsDownload(false).setFileName(filename).setNumChunk(blockcount+1).build();
+            StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setIsDownload(false).setFileName(filename).setNumChunk(blockcount + 1).build();
             OutputStream outstream = connectionSocket.getOutputStream();
             helloMessage.writeDelimitedTo(outstream);
             /**
@@ -79,14 +78,13 @@ public class Uploader extends FileManager implements Runnable {
             InputStream instream = connectionSocket.getInputStream();
             StorageMessages.DataPacket nodeListMessage = StorageMessages.DataPacket.getDefaultInstance();
             nodeListMessage = nodeListMessage.parseDelimitedFrom(instream);
-            List nodeList =  nodeListMessage.getNodeListList();
+            List nodeList = nodeListMessage.getNodeListList();
             System.out.println(nodeList);
 
-            for (int i = 0; i <nodeList.size(); i++ )
-            {
-                StorageMessages.NodeHash  nodeHash =(StorageMessages.NodeHash ) nodeList.get(i);
+            for (int i = 0; i < nodeList.size(); i++) {
+                StorageMessages.NodeHash nodeHash = (StorageMessages.NodeHash) nodeList.get(i);
                 String hostPort = nodeHash.getHostPort();
-                sendData(hostPort, fm.getPiece(filename,i));
+                sendData(hostPort, fm.getPiece(filename, i));
             }
 
 

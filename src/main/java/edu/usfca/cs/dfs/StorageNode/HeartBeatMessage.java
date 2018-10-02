@@ -13,10 +13,10 @@ import static edu.usfca.cs.dfs.StorageNode.StorageNode.*;
 
 public class HeartBeatMessage extends Connection implements Runnable {
 
-    private Map<String,Long> timeStampMap;
+    private Map<String, Long> timeStampMap;
     private ReentrantReadWriteLock timeStampMaplock;
 
-    public HeartBeatMessage(){
+    public HeartBeatMessage() {
         timeStampMap = new HashMap<>();
         timeStampMaplock = new ReentrantReadWriteLock();
     }
@@ -24,27 +24,24 @@ public class HeartBeatMessage extends Connection implements Runnable {
     @Override
     public void run() {
         try {
-            if (!isShutdown)
-            {
-                String hostPort = COORDINATOR_HOST+":"+COORDINATOR_PORT;
+            if (!isShutdown) {
+                String hostPort = COORDINATOR_HOST + ":" + COORDINATOR_PORT;
 //                System.out.println(hostPort);
                 StorageMessages.DataPacket heartBeatMessage = StorageMessages.DataPacket.newBuilder().setType(HEARTBEAT).setHost(HOST).setPort(PORT).setRequestNum(NumRequest).setUsage(USAGE).build();
                 sendSomthing(hostPort, heartBeatMessage);
 //                System.out.println("Send a heartbeat");
             }
-        }
-        catch (Exception e)
-        {
-                e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public void updateTimestamp (String hostPort){
+    public void updateTimestamp(String hostPort) {
         timeStampMaplock.writeLock().lock();
-        try{
-            timeStampMap.put(hostPort,System.currentTimeMillis());
+        try {
+            timeStampMap.put(hostPort, System.currentTimeMillis());
 
-        }finally {
+        } finally {
             timeStampMaplock.writeLock().unlock();
         }
 

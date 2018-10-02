@@ -23,6 +23,7 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
         this.nm = nm;
         this.hbm = hbm;
     }
+
     @Override
     public void run() {
         try {
@@ -33,19 +34,17 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                 OutputStream outstream = connectionSocket.getOutputStream();
                 StorageMessages.DataPacket heartBeatMessage = StorageMessages.DataPacket.getDefaultInstance();
                 heartBeatMessage = heartBeatMessage.parseDelimitedFrom(instream);
-                if (heartBeatMessage.getType() == StorageMessages.DataPacket.packetType.HEARTBEAT)
-                {
+                if (heartBeatMessage.getType() == StorageMessages.DataPacket.packetType.HEARTBEAT) {
                     /**
                      * Check heartbeat in list
                      */
                     String host = heartBeatMessage.getHost();
                     int port = heartBeatMessage.getPort();
-                    String hostport = host+":"+port;
-                    System.out.println("hosthort = "+ hostport);
+                    String hostport = host + ":" + port;
+                    System.out.println("hosthort = " + hostport);
                     hbm.updateTimestamp(hostport);
 
-                    if (!nm.checkExist(hostport))
-                    {
+                    if (!nm.checkExist(hostport)) {
                         nm.addNode(hostport);
                         /**
                          * Send replication of node map to All datanodes
@@ -55,12 +54,11 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                          * Begin re-balance process,
                          */
                         System.out.println("begin re-balance");
-                        StorageMessages.DataPacket reBalance = StorageMessages.DataPacket.newBuilder().setType(StorageMessages.DataPacket.packetType.REBALANCE).setBeginRebalanceNode(hostport).build();
-                        sendSomthing(hostport,reBalance);
+                        StorageMessages.DataPacket reBalance = StorageMessages.DataPacket.newBuilder().setType(StorageMessages.DataPacket.packetType.REBALANCE).setBeginRebalanceNode(hostport).setIsBroken(false).build();
+                        sendSomthing(hostport, reBalance);
 //                        reBalance.writeDelimitedTo(outstream);
                         connectionSocket.close();
-                    }
-                    else {
+                    } else {
                         /**
                          * Get into heartbeat manager, update node's usage, num requests from client, and timestamp
                          */

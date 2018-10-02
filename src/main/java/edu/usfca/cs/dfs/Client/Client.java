@@ -28,12 +28,11 @@ public class Client {
 
     }
 
-    public void beginConnection(){
+    public void beginConnection() {
         fm = new FileMap();
         ui = new UI(threads, fm);
         threads.submit(ui);
     }
-
 
 
 }

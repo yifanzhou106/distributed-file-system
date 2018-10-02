@@ -15,10 +15,11 @@ public class Connection {
 
     /**
      * Send something without reply
+     *
      * @param hostport
      * @param message
      */
-    public void sendSomthing (String hostport, StorageMessages.DataPacket message){
+    public void sendSomthing(String hostport, StorageMessages.DataPacket message) {
         try {
             String[] address = hostport.split(":");
             InetAddress ip = InetAddress.getByName(address[0]);
@@ -28,19 +29,19 @@ public class Connection {
             OutputStream outstream = connectionSocket.getOutputStream();
             message.writeDelimitedTo(outstream);
             connectionSocket.close();
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
      * Send something with reply
+     *
      * @param hostport
      * @param message
      * @return
      */
-    public StorageMessages.DataPacket sendRequest (String hostport, StorageMessages.DataPacket message){
+    public StorageMessages.DataPacket sendRequest(String hostport, StorageMessages.DataPacket message) {
         try {
             /**
              * Send self info and receive nodes and file detail info
@@ -59,8 +60,7 @@ public class Connection {
             StorageMessages.DataPacket nodeListMessage = StorageMessages.DataPacket.getDefaultInstance();
             nodeListMessage = nodeListMessage.parseDelimitedFrom(instream);
             return nodeListMessage;
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

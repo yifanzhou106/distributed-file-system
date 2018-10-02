@@ -12,13 +12,36 @@ message DataPacket {
     int32 usage = 7;
     int32 requestNum = 8;
     repeated NodeHash nodeList = 9;
+    string host = 10;
+    int32 port = 11;
+
+    bool isReplic = 12;
+    int32 numReplic =13;
+
+    repeated DataPacket rebalanceLocData = 14;
+    repeated DataPacket rebalanceReplicData = 15;
+    string deleteNodeFile = 16;
+    string beginRebalanceNode = 17;
+
+    repeated DataPacket fileMetaData = 18;
+
+    bool isDownload = 19;
+    bool isBroken = 20;
+    string hostport = 21;
 
     enum packetType {
         REQUEST = 0;
-        ACK = 1;
+        DOWNLOAD = 1;
         DATA = 2;
         HEARTBEAT = 3;
         NODELIST = 4;
+        REBALANCE = 5;
+        DELETE_BY_NODE = 6;
+        DELETE_BY_FILENAME = 7;
+        REBALANCE_ACK = 8;
+        FILE_META = 9;
+        UPDATE_REPLICATION = 10;
+
     }
 }
 

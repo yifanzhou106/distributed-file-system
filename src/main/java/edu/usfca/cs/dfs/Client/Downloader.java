@@ -36,21 +36,20 @@ public class Downloader extends FileManager implements Runnable {
         try {
 
             InetAddress ip = InetAddress.getByName(NODE_HOST);
-            String hostPort =  NODE_HOST+":" +NODE_PORT;
+            String hostPort = NODE_HOST + ":" + NODE_PORT;
             StorageMessages.DataPacket helloMessage = StorageMessages.DataPacket.newBuilder().setType(REQUEST).setIsDownload(true).setFileName(filename).build();
-            StorageMessages.DataPacket nodeListMessage =  sendRequest(hostPort,helloMessage);
-            List nodeList =  nodeListMessage.getNodeListList();
+            StorageMessages.DataPacket nodeListMessage = sendRequest(hostPort, helloMessage);
+            List nodeList = nodeListMessage.getNodeListList();
             System.out.println(nodeList);
             int numChunk = nodeListMessage.getNumChunk();
 //            countdowntimer = new CountDownLatch(numChunk);
 
-            for (int i = 0; i <nodeList.size(); i++ )
-            {
-                StorageMessages.NodeHash  nodeHash =(StorageMessages.NodeHash ) nodeList.get(i);
+            for (int i = 0; i < nodeList.size(); i++) {
+                StorageMessages.NodeHash nodeHash = (StorageMessages.NodeHash) nodeList.get(i);
                 hostPort = nodeHash.getHostPort();
                 StorageMessages.DataPacket downloadMessage = StorageMessages.DataPacket.newBuilder().setType(DOWNLOAD).setFileName(filename).setChunkId(i).build();
-                StorageMessages.DataPacket fileChunk = sendRequest(hostPort,downloadMessage);
-                fm.addFile(filename,i,fileChunk);
+                StorageMessages.DataPacket fileChunk = sendRequest(hostPort, downloadMessage);
+                fm.addFile(filename, i, fileChunk);
 
             }
 //            countdowntimer.await();
