@@ -13,6 +13,10 @@ public class Client {
 
     public static int NODE_PORT = 8000;
     public static String NODE_HOST = "localhost";
+
+    public static int COOR_PORT = 7000;
+    public static String COOR_HOST = "localhost";
+
     public static boolean isDebug = false;
     public static volatile boolean isShutdown = false;
 

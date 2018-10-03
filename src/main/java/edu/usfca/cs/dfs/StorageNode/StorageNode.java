@@ -18,9 +18,9 @@ public class StorageNode {
     public static volatile boolean isShutdown = false;
     public static volatile int USAGE = 0;
     public static volatile int NumRequest = 0;
-    private HeartBeatMessage hbm = new HeartBeatMessage();
     private NodeMap nm = new NodeMap();
     private FileMap fm = new FileMap();
+    private HeartBeatMessage hbm = new HeartBeatMessage(fm);
 
     final ScheduledExecutorService heartBeatService = Executors.newSingleThreadScheduledExecutor();
     final ExecutorService threads = Executors.newFixedThreadPool(4);

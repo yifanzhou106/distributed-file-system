@@ -28,6 +28,7 @@ message DataPacket {
     bool isDownload = 19;
     bool isBroken = 20;
     string hostport = 21;
+    string hashedPieceSum = 22;
 
     enum packetType {
         REQUEST = 0;
@@ -41,6 +42,8 @@ message DataPacket {
         REBALANCE_ACK = 8;
         FILE_META = 9;
         UPDATE_REPLICATION = 10;
+        CHECK_NODE_INFO = 11;
+        FIX_FILE_CORRUPTION = 12;
 
     }
 }
@@ -48,4 +51,6 @@ message DataPacket {
 message NodeHash {
     string hashVal = 1;
     string hostPort = 2;
+    int32 usage = 3;
+    int32 numRequest = 4;
 }

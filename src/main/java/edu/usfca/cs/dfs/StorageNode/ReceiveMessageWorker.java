@@ -1,5 +1,6 @@
 package edu.usfca.cs.dfs.StorageNode;
 
+import edu.usfca.cs.dfs.CheckSum;
 import edu.usfca.cs.dfs.StorageMessages;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
 
                 StorageMessages.DataPacket requestMessage = StorageMessages.DataPacket.getDefaultInstance();
                 requestMessage = requestMessage.parseDelimitedFrom(instream);
+
                 if (requestMessage.getType() == StorageMessages.DataPacket.packetType.REQUEST) {
                     /**
                      * Type REQUEST
@@ -84,8 +86,15 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                      * Update replication map
                      */
                     System.out.println("Updating Replication Map");
-                    System.out.println(requestMessage);
+//                    System.out.println(requestMessage);
                     fm.storeRebalanceFile(requestMessage);
+                } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.FIX_FILE_CORRUPTION) {
+                    /**
+                     * Fix File Corruption
+                     */
+                    System.out.println("Fixing File Corruption");
+                    ifFixFileCorruption(connectionSocket, requestMessage);
+
                 }
 
             }
@@ -150,13 +159,30 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
         /**
          * Retrieval and Send file chunks
          */
-//                    NumRequest++;
+        CheckSum stringSum = new CheckSum();
         OutputStream outstream = connectionSocket.getOutputStream();
 
         String filename = requestMessage.getFileName();
         int chunkID = requestMessage.getChunkId();
         StorageMessages.DataPacket dataPacket = fm.getPiece(filename, chunkID);
-        dataPacket.writeDelimitedTo(outstream);
+        String hashedPieceSum = stringSum.hashToHexString(stringSum.hash(dataPacket.getData().toByteArray()));
+        System.out.println("Download File: " + filename + " Chunk: " + chunkID);
+        /**
+         * Check if the file chunk is fine
+         */
+        if (hashedPieceSum.equals(dataPacket.getHashedPieceSum())) {
+            dataPacket.writeDelimitedTo(outstream);
+        } else {
+            String preNode = nm.getPreNode(HOSTPORT);
+            System.out.println("This chunk is broken");
+            /**
+             * Ask pre node for this replication and update this chunk
+             */
+            StorageMessages.DataPacket fileCorrpution = StorageMessages.DataPacket.newBuilder().setType(FIX_FILE_CORRUPTION).setHostport(HOSTPORT).setFileName(filename).setChunkId(chunkID).build();
+            StorageMessages.DataPacket goodFileChunk = sendRequest(preNode,fileCorrpution);
+            fm.addFile(filename,chunkID,goodFileChunk);
+            goodFileChunk.writeDelimitedTo(outstream);
+        }
         connectionSocket.close();
     }
 
@@ -250,21 +276,30 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                 connectionSocket.close();
             }
         } else {
+            System.out.println("Broken node Re_balance, I'm the leader " + HOSTPORT);
+
+            String brokenNode = requestMessage.getDeleteNodeFile();
+
+            /**
+             * move broken node replication to local data map and delete it from replication
+             */
+            System.out.println("1. move broken node replication to local data map and delete it from replication");
+            fm.moveReplicationToLocal(brokenNode);
+            System.out.println("Completed");
+
             /**
              * Ask nextnextnode send local data as replication
              */
 
-            System.out.println("Broken node Re_balance, I'm the leader " + HOSTPORT);
 
-            String brokenNode = requestMessage.getDeleteNodeFile();
             StorageMessages.DataPacket request = StorageMessages.DataPacket.newBuilder().setType(REBALANCE_ACK).setIsBroken(true).setBeginRebalanceNode(HOSTPORT).build();
 
             StorageMessages.DataPacket replicData;
             System.out.println("nextnext node: " + nextnextNode);
             if (!nextnextNode.equals(HOSTPORT)) {
-                System.out.println("1. Ask nextnextnode for local data as replication");
+                System.out.println("2. Ask nextnextnode for local data as replication");
                 replicData = sendRequest(nextnextNode, request);
-                System.out.println("Receive *********\n" + replicData);
+//                System.out.println("Receive *********\n" + replicData);
                 if (replicData.getRebalanceReplicDataList() != null)
                     fm.storeRebalanceFile(replicData);
                 System.out.println("Completed");
@@ -274,7 +309,7 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
              * send nextnode local data to prenode as replication (find replication in replicMap and send directly)
              */
             if (!preNode.equals(HOSTPORT)) {
-                System.out.println("2. send nextnode " + nextNode + " to update prenode's " + preNode + " replication(find replication in replicMap and send directly)");
+                System.out.println("3. send nextnode " + nextNode + " to update prenode's " + preNode + " replication(find replication in replicMap and send directly)");
 
                 StorageMessages.DataPacket rebalanceFilePacket = fm.buildNextReplicationPacket(nextNode, brokenNode);
                 System.out.println("rebalanceFilePacket built success");
@@ -282,12 +317,6 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                 System.out.println("Completed");
             }
 
-            /**
-             * move broken node replication to local data map and delete it from replication
-             */
-            System.out.println("3. move broken node replication to local data map and delete it from replication");
-            fm.moveReplicationToLocal(brokenNode);
-            System.out.println("Completed");
 
             /**
              * send localdate to preprenode and prenode as replication, if there is broken node replications, just delete
@@ -320,7 +349,20 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
         String leaderHostPort = requestMessage.getBeginRebalanceNode();
         String leaderHashVal = nm.getHashval(leaderHostPort);
         StorageMessages.DataPacket rebalanceFilePacket = fm.buildLocalDataPacket(leaderHashVal);
+        System.out.println(rebalanceFilePacket);
         rebalanceFilePacket.writeDelimitedTo(outstream);
+        connectionSocket.close();
+    }
+
+    public void ifFixFileCorruption(Socket connectionSocket, StorageMessages.DataPacket requestMessage) throws IOException {
+
+        OutputStream outstream = connectionSocket.getOutputStream();
+        String filename = requestMessage.getFileName();
+        int chunkId = requestMessage.getChunkId();
+        String hostport = requestMessage.getHostport();
+
+        StorageMessages.DataPacket goodFileChunk = fm.getGoodFileChunkFromReplication(hostport,filename,chunkId);
+        goodFileChunk.writeDelimitedTo(outstream);
         connectionSocket.close();
     }
 

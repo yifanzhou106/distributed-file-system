@@ -42,7 +42,7 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                     int port = heartBeatMessage.getPort();
                     String hostport = host + ":" + port;
                     System.out.println("hosthort = " + hostport);
-                    hbm.updateTimestamp(hostport);
+                    hbm.updateDataInfo(hostport,heartBeatMessage.getUsage(),heartBeatMessage.getRequestNum());
 
                     if (!nm.checkExist(hostport)) {
                         nm.addNode(hostport);
@@ -63,13 +63,16 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                          * Get into heartbeat manager, update node's usage, num requests from client, and timestamp
                          */
                         System.out.println("Already have this node in list");
-                        System.out.println("Update TimeStamp to " + hbm.getTimeStamp(hostport));
+                        System.out.println("Update TimeStamp to " + hbm.getTimeStamp(hostport) +" Usage: "+hbm.getUsage(hostport) + " Num of Request: " + hbm.getNumRequest(hostport));
                     }
 
+                }  else if (heartBeatMessage.getType() == StorageMessages.DataPacket.packetType.CHECK_NODE_INFO) {
+                      hbm.getNodeInfoPacket().writeDelimitedTo(outstream);
                 }
 
 
-            }
+
+                }
             if (isShutdown) {
                 welcomingSocket.close();
             }

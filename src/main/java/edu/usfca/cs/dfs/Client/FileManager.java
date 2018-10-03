@@ -1,6 +1,7 @@
 package edu.usfca.cs.dfs.Client;
 
 
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import edu.usfca.cs.dfs.StorageMessages;
 
 import javax.imageio.ImageIO;
@@ -10,8 +11,10 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.sql.Timestamp;
+import java.util.concurrent.CountDownLatch;
 
 import static edu.usfca.cs.dfs.Client.Client.*;
+import static edu.usfca.cs.dfs.StorageMessages.DataPacket.packetType.DOWNLOAD;
 
 
 /**
@@ -78,15 +81,13 @@ public class FileManager {
         return newFileName;
     }
 
-    private Socket connectionSocket;
-//    private int timeout = 1000;
 
     public void sendData(String hostport, StorageMessages.DataPacket message) {
         try {
             String[] address = hostport.split(":");
             InetAddress ip = InetAddress.getByName(address[0]);
             int port = Integer.parseInt(address[1]);
-            connectionSocket = new Socket(ip, port);
+            Socket connectionSocket = new Socket(ip, port);
 //            connectionSocket.setSoTimeout(timeout);
             OutputStream outstream = connectionSocket.getOutputStream();
             message.writeDelimitedTo(outstream);
@@ -104,8 +105,8 @@ public class FileManager {
             String[] address = hostport.split(":");
             InetAddress ip = InetAddress.getByName(address[0]);
             int port = Integer.parseInt(address[1]);
-            connectionSocket = new Socket(ip, port);
-            connectionSocket.setSoTimeout(1000);
+            Socket connectionSocket = new Socket(ip, port);
+//            connectionSocket.setSoTimeout(1000);
             OutputStream outstream = connectionSocket.getOutputStream();
             message.writeDelimitedTo(outstream);
             /**
@@ -116,9 +117,42 @@ public class FileManager {
             nodeListMessage = nodeListMessage.parseDelimitedFrom(instream);
             return nodeListMessage;
         } catch (Exception e) {
+            System.out.println("Send Request fails");
             e.printStackTrace();
         }
         return null;
     }
+
+    //Runable send post
+    public class downLoadParallel implements Runnable {
+        private String hostport;
+        private String filename;
+        private CountDownLatch countdowntimer;
+        private int chunkId;
+        private FileMap fm;
+
+        public downLoadParallel(String hostport, String filename, int chunkId, CountDownLatch countdowntimer, FileMap fm) {
+            this.hostport = hostport;
+            this.filename = filename;
+            this.countdowntimer = countdowntimer;
+            this.chunkId = chunkId;
+            this.fm = fm;
+        }
+
+        @Override
+        public void run() {
+            try {
+                StorageMessages.DataPacket downloadMessage = StorageMessages.DataPacket.newBuilder().setType(DOWNLOAD).setFileName(filename).setChunkId(chunkId).build();
+                StorageMessages.DataPacket fileChunk = sendRequest(hostport, downloadMessage);
+
+                System.out.println("Chunk #" + fileChunk.getChunkId() + " is fine, store it.");
+                fm.addFile(filename, chunkId, fileChunk);
+                countdowntimer.countDown();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
 }

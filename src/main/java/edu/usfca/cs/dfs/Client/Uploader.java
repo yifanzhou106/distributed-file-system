@@ -1,6 +1,7 @@
 package edu.usfca.cs.dfs.Client;
 
 import com.google.protobuf.ByteString;
+import edu.usfca.cs.dfs.CheckSum;
 import edu.usfca.cs.dfs.StorageMessages;
 
 import java.io.InputStream;
@@ -35,7 +36,9 @@ public class Uploader extends FileManager implements Runnable {
         try {
             byte[] byteItem;
             String filename;
-            if (!isDebug) {
+            CheckSum stringSum = new CheckSum();
+
+            if (isDebug) {
                 FIXED_PIECE_SIZE = 256;
                 String item = "As a globally-distributed database, Spanner provides several interesting features. First, the replication configurations for data can be dynamically controlled at a fine grain by applications Second, Spanner has two features that are difficult to implement in a distributed database: it provides externally consistent reads and writes, and globally-consistent reads across the database at a timestamp. These features enable Spanner to support consistent backups, consistent MapReduce executions, and atomic schema updates, all at global scale, and even in the presence of ongoing transactions.";
                 filename = "file1";
@@ -59,7 +62,8 @@ public class Uploader extends FileManager implements Runnable {
                 } else {
                     piece = Arrays.copyOfRange(byteItem, i * FIXED_PIECE_SIZE, (i + 1) * FIXED_PIECE_SIZE);
                 }
-                StorageMessages.DataPacket chunkPiece = StorageMessages.DataPacket.newBuilder().setType(DATA).setIsReplic(false).setChunkId(i).setFileName(filename).setData(ByteString.copyFrom(piece)).build();
+                String hashedPieceSum = stringSum.hashToHexString(stringSum.hash(piece));
+                StorageMessages.DataPacket chunkPiece = StorageMessages.DataPacket.newBuilder().setType(DATA).setIsReplic(false).setChunkId(i).setFileName(filename).setData(ByteString.copyFrom(piece)).setHashedPieceSum(hashedPieceSum).build();
                 fm.addFile(filename, i, chunkPiece);
             }
 

@@ -1,5 +1,6 @@
 package edu.usfca.cs.dfs.Client;
 
+import edu.usfca.cs.dfs.CheckSum;
 import edu.usfca.cs.dfs.StorageMessages;
 
 import java.io.InputStream;
@@ -22,8 +23,7 @@ public class Downloader extends FileManager implements Runnable {
     private String filename;
     private FileMap fm;
     private CountDownLatch countdowntimer;
-    private Socket connectionSocket = new Socket();
-    private int timeout = 1000;
+
 
     public Downloader(ExecutorService threads, FileMap fm, String filename) {
         this.threads = threads;
@@ -34,6 +34,7 @@ public class Downloader extends FileManager implements Runnable {
     @Override
     public void run() {
         try {
+            CheckSum stringSum = new CheckSum();
 
             InetAddress ip = InetAddress.getByName(NODE_HOST);
             String hostPort = NODE_HOST + ":" + NODE_PORT;
@@ -42,17 +43,14 @@ public class Downloader extends FileManager implements Runnable {
             List nodeList = nodeListMessage.getNodeListList();
             System.out.println(nodeList);
             int numChunk = nodeListMessage.getNumChunk();
-//            countdowntimer = new CountDownLatch(numChunk);
 
+            countdowntimer = new CountDownLatch(numChunk);
             for (int i = 0; i < nodeList.size(); i++) {
                 StorageMessages.NodeHash nodeHash = (StorageMessages.NodeHash) nodeList.get(i);
                 hostPort = nodeHash.getHostPort();
-                StorageMessages.DataPacket downloadMessage = StorageMessages.DataPacket.newBuilder().setType(DOWNLOAD).setFileName(filename).setChunkId(i).build();
-                StorageMessages.DataPacket fileChunk = sendRequest(hostPort, downloadMessage);
-                fm.addFile(filename, i, fileChunk);
-
+                threads.submit(new downLoadParallel(hostPort, filename,i ,countdowntimer, fm));
             }
-//            countdowntimer.await();
+            countdowntimer.await();
 
 
             /**
@@ -61,7 +59,7 @@ public class Downloader extends FileManager implements Runnable {
             System.out.println("Download Finished");
             byte[] byteValue = fm.getFile(filename, numChunk);
 
-            if (!isDebug) {
+            if (isDebug) {
                 String string = new String(byteValue);
                 System.out.println("\nReceived message is:");
                 System.out.println(string);

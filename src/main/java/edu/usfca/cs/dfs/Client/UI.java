@@ -49,6 +49,10 @@ public class UI implements Runnable {
                     threads.submit(new Downloader(threads, fm, filename));
                     break;
 
+                case "checknode":
+                    threads.submit(new CheckNodeList(threads));
+                    break;
+
                 case "exit":
                     isShutdown = true;
                     threads.shutdownNow();
