@@ -16,11 +16,13 @@ public class HeartBeatMessage extends Connection implements Runnable {
     private Map<String, Long> timeStampMap;
     private ReentrantReadWriteLock timeStampMaplock;
     private FileMap fm;
+    private NodeMap nm;
 
-    public HeartBeatMessage(FileMap fm) {
+    public HeartBeatMessage(FileMap fm, NodeMap nm) {
         timeStampMap = new HashMap<>();
         timeStampMaplock = new ReentrantReadWriteLock();
         this.fm = fm;
+        this.nm = nm;
     }
 
     @Override
@@ -29,7 +31,9 @@ public class HeartBeatMessage extends Connection implements Runnable {
             if (!isShutdown) {
                 String hostPort = COORDINATOR_HOST + ":" + COORDINATOR_PORT;
 //                System.out.println(hostPort);
-                StorageMessages.DataPacket heartBeatMessage = StorageMessages.DataPacket.newBuilder().setType(HEARTBEAT).setHost(HOST).setPort(PORT).setRequestNum(NumRequest).setUsage(fm.getUsage()).build();
+                StorageMessages.DataPacket heartBeatMessage = StorageMessages.DataPacket.newBuilder().setType(HEARTBEAT).setHost(HOST).setPort(PORT).setRequestNum(NumRequest).setUsage(fm.getUsage()).addAllNodeList(nm.getNodeList()).build();
+
+
                 sendSomthing(hostPort, heartBeatMessage);
 //                System.out.println("Send a heartbeat");
             }

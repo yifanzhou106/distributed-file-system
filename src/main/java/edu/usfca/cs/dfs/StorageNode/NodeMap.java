@@ -37,6 +37,22 @@ public class NodeMap extends Connection {
         }
     }
 
+    public List<StorageMessages.NodeHash> getNodeList() {
+        nodemaplock.readLock().lock();
+        try {
+            List< StorageMessages.NodeHash> nodelist = new ArrayList<>();
+            for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
+                StorageMessages.NodeHash hashedNode = StorageMessages.NodeHash.newBuilder().setHashVal(entry.getKey()).setHostPort(entry.getValue()).build();
+                nodelist.add(hashedNode);
+            }
+            return nodelist;
+        } finally {
+            nodemaplock.readLock().unlock();
+
+        }
+
+    }
+
     public void updateNodeMap(StorageMessages.DataPacket requestMessage) {
         nodemaplock.writeLock().lock();
         try {

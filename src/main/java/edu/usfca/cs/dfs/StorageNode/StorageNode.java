@@ -20,7 +20,7 @@ public class StorageNode {
     public static volatile int NumRequest = 0;
     private NodeMap nm = new NodeMap();
     private FileMap fm = new FileMap();
-    private HeartBeatMessage hbm = new HeartBeatMessage(fm);
+    private HeartBeatMessage hbm = new HeartBeatMessage(fm, nm);
 
     final ScheduledExecutorService heartBeatService = Executors.newSingleThreadScheduledExecutor();
     final ExecutorService threads = Executors.newFixedThreadPool(4);

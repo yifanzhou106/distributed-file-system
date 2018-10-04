@@ -4,10 +4,7 @@ import edu.usfca.cs.dfs.StorageMessages;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class NodeMap extends Connection {
@@ -75,6 +72,43 @@ public class NodeMap extends Connection {
             }
             nodeListPacket.setType(StorageMessages.DataPacket.packetType.NODELIST);
             return nodeListPacket.build();
+        } finally {
+            nodemaplock.readLock().unlock();
+
+        }
+
+    }
+
+    public void updateNodeMap(StorageMessages.DataPacket requestMessage) {
+        nodemaplock.writeLock().lock();
+        try {
+            List nodelist = requestMessage.getNodeListList();
+            System.out.println(nodelist);
+            hostHashMap.clear();
+            for (int i = 0; i < nodelist.size(); i++) {
+                StorageMessages.NodeHash nodeHash = (StorageMessages.NodeHash) nodelist.get(i);
+                hostHashMap.put(nodeHash.getHashVal(), nodeHash.getHostPort());
+            }
+            System.out.println("Node map updated " + hostHashMap);
+        } finally {
+            nodemaplock.writeLock().unlock();
+        }
+    }
+
+    public boolean checkNodeListEmpty() {
+        nodemaplock.readLock().lock();
+        try {
+            return hostHashMap.isEmpty();
+        } finally {
+            nodemaplock.readLock().unlock();
+
+        }
+
+    }
+    public boolean compareNodeListLength(StorageMessages.DataPacket message) {
+        nodemaplock.readLock().lock();
+        try {
+            return hostHashMap.size() < message.getNodeListList().size();
         } finally {
             nodemaplock.readLock().unlock();
 
