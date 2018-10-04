@@ -152,9 +152,13 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
         } else {
             System.out.println("Download Request");
             System.out.println(hashedName);
-            System.out.println(nm.getSingleFileMeta(hashedName));
-            nm.getSingleFileMeta(hashedName).writeDelimitedTo(outstream);
-            connectionSocket.close();
+            if (nm.checkFileMetaExist(hashedName)) {
+                System.out.println(nm.getSingleFileMeta(hashedName));
+                nm.getSingleFileMeta(hashedName).writeDelimitedTo(outstream);
+                connectionSocket.close();
+            } else {
+                System.out.println("File: " + filename + " is not exist");
+            }
 
         }
 
@@ -166,29 +170,38 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
          */
         CheckSum stringSum = new CheckSum();
         OutputStream outstream = connectionSocket.getOutputStream();
+        String preNode = nm.getPreNode(HOSTPORT);
 
         String filename = requestMessage.getFileName();
         int chunkID = requestMessage.getChunkId();
         StorageMessages.DataPacket dataPacket = fm.getPiece(filename, chunkID);
-        String hashedPieceSum = stringSum.hashToHexString(stringSum.hash(dataPacket.getData().toByteArray()));
-        System.out.println("Download File: " + filename + " Chunk: " + chunkID);
-        /**
-         * Check if the file chunk is fine
-         */
-        if (hashedPieceSum.equals(dataPacket.getHashedPieceSum())) {
-            dataPacket.writeDelimitedTo(outstream);
+        if (dataPacket != null) {
+            String hashedPieceSum = stringSum.hashToHexString(stringSum.hash(dataPacket.getData().toByteArray()));
+            System.out.println("Download File: " + filename + " Chunk: " + chunkID);
+            /**
+             * Check if the file chunk is fine
+             */
+            if (!hashedPieceSum.equals(dataPacket.getHashedPieceSum())) {
+                System.out.println("This chunk is broken");
+                fixFileCorruption(preNode, filename, chunkID);
+                dataPacket = fm.getPiece(filename, chunkID);
+            }
         } else {
-            String preNode = nm.getPreNode(HOSTPORT);
-            System.out.println("This chunk is broken");
+            System.out.println("The chunk " + chunkID + " is Missed");
             /**
              * Ask pre node for this replication and update this chunk
              */
-            StorageMessages.DataPacket fileCorrpution = StorageMessages.DataPacket.newBuilder().setType(FIX_FILE_CORRUPTION).setHostport(HOSTPORT).setFileName(filename).setChunkId(chunkID).build();
-            StorageMessages.DataPacket goodFileChunk = sendRequest(preNode, fileCorrpution);
-            fm.addFile(filename, chunkID, goodFileChunk);
-            goodFileChunk.writeDelimitedTo(outstream);
+            fixFileCorruption(preNode, filename, chunkID);
+            dataPacket = fm.getPiece(filename, chunkID);
         }
+        dataPacket.writeDelimitedTo(outstream);
         connectionSocket.close();
+    }
+
+    public void fixFileCorruption(String preNode, String filename, int chunkID) {
+        StorageMessages.DataPacket fileCorrpution = StorageMessages.DataPacket.newBuilder().setType(FIX_FILE_CORRUPTION).setHostport(HOSTPORT).setFileName(filename).setChunkId(chunkID).build();
+        StorageMessages.DataPacket goodFileChunk = sendRequest(preNode, fileCorrpution);
+        fm.addFile(filename, chunkID, goodFileChunk);
     }
 
     public void ifData(Socket connectionSocket, StorageMessages.DataPacket requestMessage) throws IOException {

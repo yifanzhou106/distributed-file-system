@@ -93,7 +93,6 @@ public class Uploader extends FileManager implements Runnable {
 
             System.out.println("Upload successfully");
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Upload Error, cannot find file");
         }
 

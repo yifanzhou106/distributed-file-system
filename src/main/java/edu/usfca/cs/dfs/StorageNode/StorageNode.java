@@ -24,6 +24,7 @@ public class StorageNode {
 
     final ScheduledExecutorService heartBeatService = Executors.newSingleThreadScheduledExecutor();
     final ExecutorService threads = Executors.newFixedThreadPool(4);
+    private UI ui = new UI(threads, fm);
 
     public static void main(String[] args)
             throws Exception {
@@ -48,6 +49,7 @@ public class StorageNode {
             }
         }
         HOSTPORT = HOST + ":" + PORT;
+
         StorageNode sn = new StorageNode();
         sn.startPlay();
     }
@@ -63,6 +65,7 @@ public class StorageNode {
     }
 
     public void startPlay() {
+        threads.submit(ui);
         heartBeatService.scheduleAtFixedRate(hbm, 0, 5000, TimeUnit.MILLISECONDS);
         threads.submit(new ReceiveMessageWorker(threads, fm, nm));
 

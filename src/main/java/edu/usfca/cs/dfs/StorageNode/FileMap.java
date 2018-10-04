@@ -87,9 +87,11 @@ public class FileMap {
         try {
             TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             StorageMessages.DataPacket piece;
-            filePieces = localFileMap.get(filename);
-            piece = filePieces.get(pieceid);
-            return piece;
+            if (localFileMap.containsKey(filename)) {
+                filePieces = localFileMap.get(filename);
+                piece = filePieces.get(pieceid);
+                return piece;
+            }else return null;
 
         } finally {
             filemaplock.readLock().unlock();
@@ -440,6 +442,21 @@ public class FileMap {
         } finally {
             filemaplock.writeLock().unlock();
             replicFilemaplock.writeLock().unlock();
+        }
+    }
+
+    public void deleteByFilenameLocally(String filename) {
+        filemaplock.writeLock().lock();
+        try {
+            if (localFileMap.containsKey(filename)) {
+                localFileMap.remove(filename);
+                System.out.println("DELETE Successfully");
+            } else  {
+                System.out.println("Do not have this file");
+            }
+
+        } finally {
+            filemaplock.writeLock().unlock();
         }
     }
 }

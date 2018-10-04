@@ -84,6 +84,17 @@ public class NodeMap extends Connection {
         }
     }
 
+    public Boolean checkFileMetaExist(String hashname ){
+        fileMetalock.readLock().lock();
+        try {
+                return fileMeta.containsKey(hashname);
+        }
+        finally {
+            fileMetalock.readLock().unlock();
+
+        }
+    }
+
     public StorageMessages.DataPacket getFileMetaPacket() {
         fileMetalock.readLock().lock();
         try {
