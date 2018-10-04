@@ -48,7 +48,7 @@ public class Downloader extends FileManager implements Runnable {
             for (int i = 0; i < nodeList.size(); i++) {
                 StorageMessages.NodeHash nodeHash = (StorageMessages.NodeHash) nodeList.get(i);
                 hostPort = nodeHash.getHostPort();
-                threads.submit(new downLoadParallel(hostPort, filename,i ,countdowntimer, fm));
+                threads.submit(new downLoadParallel(hostPort, filename, i, countdowntimer, fm));
             }
             countdowntimer.await();
 

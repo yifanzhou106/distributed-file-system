@@ -21,6 +21,16 @@ public class Coordinator {
 
     public static void main(String[] args) {
         Coordinator coo = new Coordinator();
+        if (args.length > 0) {
+            if (args[0].equals("-localhost")) {
+                HOST = args[1];
+                System.out.println(HOST);
+            }
+            if (args[2].equals("-localport")) {
+                PORT = Integer.parseInt(args[3]);
+                System.out.println(PORT);
+            }
+        }
         coo.startPlay();
         System.out.println("Starting coordinator...");
 

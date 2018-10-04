@@ -159,6 +159,19 @@ public class NodeMap extends Connection {
 
     }
 
+    public void deleteFileFromMetadaMap(String hashedFilename) {
+        fileMetalock.writeLock().lock();
+        try {
+            if (fileMeta.containsKey(hashedFilename))
+                fileMeta.remove(hashedFilename);
+
+        } finally {
+            fileMetalock.writeLock().unlock();
+        }
+
+    }
+
+
     public StorageMessages.DataPacket.Builder getNode(StorageMessages.DataPacket.Builder nodeListPacket, int begin, int numChunks) {
         int j = 0;
         int chunkCount = 0;
@@ -278,6 +291,21 @@ public class NodeMap extends Connection {
             nodemaplock.readLock().unlock();
         }
     }
+
+    public void BcastDeleteFile(StorageMessages.DataPacket deleteFile) {
+        nodemaplock.readLock().lock();
+        try {
+            for (Map.Entry<String, String> entry : hostHashMap.entrySet()) {
+                String hostport = entry.getValue();
+                if (!hostport.equals(HOSTPORT))
+                    sendSomthing(hostport, deleteFile);
+            }
+
+        } finally {
+            nodemaplock.readLock().unlock();
+        }
+    }
+
 
     public String getNextNode(String hostport) {
         return hostHashMap.get(findNextNodeKey(hostport));

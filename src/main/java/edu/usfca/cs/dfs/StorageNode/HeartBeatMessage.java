@@ -16,6 +16,7 @@ public class HeartBeatMessage extends Connection implements Runnable {
     private Map<String, Long> timeStampMap;
     private ReentrantReadWriteLock timeStampMaplock;
     private FileMap fm;
+
     public HeartBeatMessage(FileMap fm) {
         timeStampMap = new HashMap<>();
         timeStampMaplock = new ReentrantReadWriteLock();

@@ -21,10 +21,6 @@ public class FileMap {
     private Map<String, TreeMap<Integer, StorageMessages.DataPacket>> localFileMap;
     private Map<String, List<StorageMessages.DataPacket>> replicFileMap;
 
-    private TreeMap<Integer, StorageMessages.DataPacket> filePieces;
-//    private TreeMap<String, StorageMessages.DataPacket> replicPieces;
-private  List<StorageMessages.DataPacket> replicPieces;
-
     private ReentrantReadWriteLock filemaplock;
     private ReentrantReadWriteLock replicFilemaplock;
 
@@ -46,6 +42,7 @@ private  List<StorageMessages.DataPacket> replicPieces;
     public void addFile(String filename, int pieceid, StorageMessages.DataPacket chunkPiece) {
         filemaplock.writeLock().lock();
         try {
+            TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             if (!localFileMap.containsKey(filename)) {
                 filePieces = new TreeMap<>();
                 filePieces.put(pieceid, chunkPiece);
@@ -63,6 +60,7 @@ private  List<StorageMessages.DataPacket> replicPieces;
     public void addReplic(String hostport, String filename, StorageMessages.DataPacket chunkPiece) {
         replicFilemaplock.writeLock().lock();
         try {
+            List<StorageMessages.DataPacket> replicPieces;
             if (!replicFileMap.containsKey(hostport)) {
                 replicPieces = new ArrayList<>();
                 replicPieces.add(chunkPiece);
@@ -87,6 +85,7 @@ private  List<StorageMessages.DataPacket> replicPieces;
     public StorageMessages.DataPacket getPiece(String filename, int pieceid) {
         filemaplock.readLock().lock();
         try {
+            TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             StorageMessages.DataPacket piece;
             filePieces = localFileMap.get(filename);
             piece = filePieces.get(pieceid);
@@ -107,6 +106,7 @@ private  List<StorageMessages.DataPacket> replicPieces;
     public byte[] getFile(String filename, int piecenum) {
         filemaplock.readLock().lock();
         try {
+            TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             ByteArrayOutputStream output = new ByteArrayOutputStream();
             filePieces = localFileMap.get(filename);
             for (int i = 0; i < piecenum; i++)
@@ -131,6 +131,7 @@ private  List<StorageMessages.DataPacket> replicPieces;
     public int getPieceNum(String filename) {
         filemaplock.readLock().lock();
         try {
+            TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             filePieces = localFileMap.get(filename);
             return filePieces.size();
         } finally {
@@ -160,6 +161,7 @@ private  List<StorageMessages.DataPacket> replicPieces;
     public StorageMessages.DataPacket buildLocalDataPacket(String leaderHashVal) {
         filemaplock.readLock().lock();
         try {
+            TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             StorageMessages.DataPacket.Builder rebalanceFilePacket = StorageMessages.DataPacket.newBuilder();
 
             for (Map.Entry<String, TreeMap<Integer, StorageMessages.DataPacket>> entry : localFileMap.entrySet()) {
@@ -190,8 +192,8 @@ private  List<StorageMessages.DataPacket> replicPieces;
         filemaplock.readLock().lock();
         replicFilemaplock.readLock().lock();
         try {
+            TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             StorageMessages.DataPacket.Builder rebalanceFilePacket = StorageMessages.DataPacket.newBuilder();
-
             for (Map.Entry<String, TreeMap<Integer, StorageMessages.DataPacket>> entry : localFileMap.entrySet()) {
                 filePieces = entry.getValue();
                 /**
@@ -213,16 +215,16 @@ private  List<StorageMessages.DataPacket> replicPieces;
         filemaplock.readLock().lock();
         replicFilemaplock.readLock().lock();
         try {
+            List<StorageMessages.DataPacket> replicPieces;
             StorageMessages.DataPacket.Builder rebalanceFilePacket = StorageMessages.DataPacket.newBuilder();
             System.out.println("In buildNextReplicationPacket");
-
             /**
              * next node local data
              */
             replicPieces = replicFileMap.get(nextnode);
 //            System.out.println("replicPieces " + replicPieces);
             if (replicPieces != null)
-                for (int i = 0 ; i<replicPieces.size();i++) {
+                for (int i = 0; i < replicPieces.size(); i++) {
                     rebalanceFilePacket.addRebalanceReplicData(replicPieces.get(i));
                 }
 
@@ -256,7 +258,7 @@ private  List<StorageMessages.DataPacket> replicPieces;
                 }
                 for (int i = 0; i < filelist.getRebalanceReplicDataList().size(); i++) {
                     fileChunk = filelist.getRebalanceReplicDataList().get(i);
-                    System.out.println("From " +hostport +": " + fileChunk.getFileName() + fileChunk.getChunkId());
+                    System.out.println("From " + hostport + ": " + fileChunk.getFileName() + fileChunk.getChunkId());
                     addReplic(hostport, fileChunk.getFileName(), fileChunk);
                 }
             }
@@ -294,10 +296,10 @@ private  List<StorageMessages.DataPacket> replicPieces;
     public void moveReplicationToLocal(String hostport) {
         replicFilemaplock.writeLock().lock();
         try {
-
+            List<StorageMessages.DataPacket> replicPieces;
             if (replicFileMap.containsKey(hostport)) {
                 replicPieces = replicFileMap.get(hostport);
-                for (int i = 0 ; i< replicPieces.size();i++) {
+                for (int i = 0; i < replicPieces.size(); i++) {
                     StorageMessages.DataPacket fileChunk = replicPieces.get(i);
                     addFile(fileChunk.getFileName(), fileChunk.getChunkId(), fileChunk);
                 }
@@ -325,22 +327,24 @@ private  List<StorageMessages.DataPacket> replicPieces;
         return sb.toString();
     }
 
-    public void printMapChunk(){
+    public void printMapChunk() {
         filemaplock.readLock().lock();
         try {
+            TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             for (Map.Entry<String, TreeMap<Integer, StorageMessages.DataPacket>> entry : localFileMap.entrySet()) {
                 filePieces = entry.getValue();
                 System.out.println("Node has file: " + entry.getKey() + " Chunks: " + filePieces.keySet());
             }
-            } finally {
+        } finally {
             filemaplock.readLock().unlock();
 
         }
     }
 
-    public void printReplicChunk(){
+    public void printReplicChunk() {
         replicFilemaplock.readLock().lock();
         try {
+            List<StorageMessages.DataPacket> replicPieces;
             for (Map.Entry<String, List<StorageMessages.DataPacket>> entry : replicFileMap.entrySet()) {
                 replicPieces = entry.getValue();
                 System.out.println("Node has replication: " + entry.getKey() + " num Chunk Replications: " + replicPieces.size());
@@ -350,12 +354,12 @@ private  List<StorageMessages.DataPacket> replicPieces;
         }
     }
 
-    public int getUsage(){
+    public int getUsage() {
         filemaplock.readLock().lock();
         replicFilemaplock.readLock().lock();
         int usage = 0;
         try {
-            usage =getLocalUsage() +getReplicationUsage();
+            usage = getLocalUsage() + getReplicationUsage();
             return usage;
         } finally {
             filemaplock.readLock().unlock();
@@ -363,10 +367,11 @@ private  List<StorageMessages.DataPacket> replicPieces;
         }
     }
 
-    public int getLocalUsage(){
+    public int getLocalUsage() {
         filemaplock.readLock().lock();
         int usage = 0;
         try {
+            TreeMap<Integer, StorageMessages.DataPacket> filePieces;
             for (Map.Entry<String, TreeMap<Integer, StorageMessages.DataPacket>> entry : localFileMap.entrySet()) {
                 filePieces = entry.getValue();
                 usage = usage + filePieces.keySet().size();
@@ -377,10 +382,11 @@ private  List<StorageMessages.DataPacket> replicPieces;
         }
     }
 
-    public int getReplicationUsage(){
+    public int getReplicationUsage() {
         replicFilemaplock.readLock().lock();
         int usage = 0;
         try {
+            List<StorageMessages.DataPacket> replicPieces;
             for (Map.Entry<String, List<StorageMessages.DataPacket>> entry : replicFileMap.entrySet()) {
                 replicPieces = entry.getValue();
                 usage = usage + replicPieces.size();
@@ -391,24 +397,49 @@ private  List<StorageMessages.DataPacket> replicPieces;
         }
     }
 
-   public StorageMessages.DataPacket getGoodFileChunkFromReplication(String hostport, String filename, int chunkId){
-       replicFilemaplock.readLock().lock();
-       try {
-           StorageMessages.DataPacket goodFileChunk = StorageMessages.DataPacket.getDefaultInstance();
-           if (replicFileMap.containsKey(hostport)) {
-               replicPieces = replicFileMap.get(hostport);
-               for (int i = 0 ; i< replicPieces.size();i++) {
-                   StorageMessages.DataPacket fileChunk = replicPieces.get(i);
-                   if (fileChunk.getFileName().equals(filename)&&(fileChunk.getChunkId()==chunkId))
-                       goodFileChunk = fileChunk;
-               }
-           } else {
-               System.out.println("I do not have this node file");
-           }
-           return goodFileChunk;
+    public StorageMessages.DataPacket getGoodFileChunkFromReplication(String hostport, String filename, int chunkId) {
+        replicFilemaplock.readLock().lock();
+        try {
+            List<StorageMessages.DataPacket> replicPieces;
+            StorageMessages.DataPacket goodFileChunk = StorageMessages.DataPacket.getDefaultInstance();
+            if (replicFileMap.containsKey(hostport)) {
+                replicPieces = replicFileMap.get(hostport);
+                for (int i = 0; i < replicPieces.size(); i++) {
+                    StorageMessages.DataPacket fileChunk = replicPieces.get(i);
+                    if (fileChunk.getFileName().equals(filename) && (fileChunk.getChunkId() == chunkId))
+                        goodFileChunk = fileChunk;
+                }
+            } else {
+                System.out.println("I do not have this node file");
+            }
+            return goodFileChunk;
 
-       } finally {
-           replicFilemaplock.readLock().unlock();
-       }
-   }
+        } finally {
+            replicFilemaplock.readLock().unlock();
+        }
+    }
+
+    public void deleteByFilename(String filename) {
+        filemaplock.writeLock().lock();
+        replicFilemaplock.writeLock().lock();
+        try {
+            if (localFileMap.containsKey(filename))
+                localFileMap.remove(filename);
+
+            for (Map.Entry<String, List<StorageMessages.DataPacket>> entry : replicFileMap.entrySet()) {
+                List<StorageMessages.DataPacket> filelist = entry.getValue();
+                List<StorageMessages.DataPacket> newFilelist = new ArrayList<>();
+                for (int i = 0; i < filelist.size(); i++) {
+                    if (!filelist.get(i).getFileName().equals(filename))
+                        newFilelist.add(filelist.get(i));
+                }
+                replicFileMap.put(entry.getKey(), newFilelist);
+            }
+            System.out.println("Successfully remove file " + filename);
+
+        } finally {
+            filemaplock.writeLock().unlock();
+            replicFilemaplock.writeLock().unlock();
+        }
+    }
 }

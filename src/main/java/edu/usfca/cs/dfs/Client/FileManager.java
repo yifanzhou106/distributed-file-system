@@ -88,12 +88,11 @@ public class FileManager {
             InetAddress ip = InetAddress.getByName(address[0]);
             int port = Integer.parseInt(address[1]);
             Socket connectionSocket = new Socket(ip, port);
-//            connectionSocket.setSoTimeout(timeout);
             OutputStream outstream = connectionSocket.getOutputStream();
             message.writeDelimitedTo(outstream);
             connectionSocket.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Send Request error: " + hostport);
         }
     }
 
@@ -106,7 +105,6 @@ public class FileManager {
             InetAddress ip = InetAddress.getByName(address[0]);
             int port = Integer.parseInt(address[1]);
             Socket connectionSocket = new Socket(ip, port);
-//            connectionSocket.setSoTimeout(1000);
             OutputStream outstream = connectionSocket.getOutputStream();
             message.writeDelimitedTo(outstream);
             /**
@@ -117,8 +115,7 @@ public class FileManager {
             nodeListMessage = nodeListMessage.parseDelimitedFrom(instream);
             return nodeListMessage;
         } catch (Exception e) {
-            System.out.println("Send Request fails");
-            e.printStackTrace();
+            System.out.println("Send Request error: " + hostport);
         }
         return null;
     }

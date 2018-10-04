@@ -26,7 +26,7 @@ public class UI implements Runnable {
             System.out.println("Enter your choices (Enter \"help\" for help): ");
             String userChoice = reader.nextLine();
             String[] splitedUserChoice = userChoice.split(" ");
-
+            String filename;
 
             switch (splitedUserChoice[0]) {
                 case "help":
@@ -45,7 +45,7 @@ public class UI implements Runnable {
 
                 case "download":
                     System.out.println("File name? ");
-                    String filename = reader.nextLine();
+                    filename = reader.nextLine();
                     threads.submit(new Downloader(threads, fm, filename));
                     break;
 
@@ -53,6 +53,11 @@ public class UI implements Runnable {
                     threads.submit(new CheckNodeList(threads));
                     break;
 
+                case "delete":
+                    System.out.println("File name? ");
+                    filename = reader.nextLine();
+                    threads.submit(new DeleteFile(threads, filename));
+                    break;
                 case "exit":
                     isShutdown = true;
                     threads.shutdownNow();

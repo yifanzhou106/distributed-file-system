@@ -29,6 +29,24 @@ public class StorageNode {
             throws Exception {
         String hostname = getHostname();
         System.out.println("Starting storage node on " + hostname + "...");
+        if (args.length > 0) {
+            if (args[0].equals("-localhost")) {
+                HOST = args[1];
+                System.out.println(HOST);
+            }
+            if (args[2].equals("-localport")) {
+                PORT = Integer.parseInt(args[3]);
+                System.out.println(PORT);
+            }
+            if (args[4].equals("-coorhost")) {
+                COORDINATOR_HOST = args[5];
+                System.out.println(COORDINATOR_HOST);
+            }
+            if (args[6].equals("-coorport")) {
+                COORDINATOR_PORT = Integer.parseInt(args[7]);
+                System.out.println(COORDINATOR_PORT);
+            }
+        }
         HOSTPORT = HOST + ":" + PORT;
         StorageNode sn = new StorageNode();
         sn.startPlay();

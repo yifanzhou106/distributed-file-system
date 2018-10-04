@@ -28,6 +28,32 @@ public class Client {
 
     public static void main(String[] args) {
         Client cl = new Client();
+        if (args.length > 0) {
+            if (args[0].equals("-localhost")) {
+                HOST = args[1];
+                System.out.println(HOST);
+            }
+            if (args[2].equals("-localport")) {
+                PORT = Integer.parseInt(args[3]);
+                System.out.println(PORT);
+            }
+            if (args[4].equals("-nodehost")) {
+                NODE_HOST = args[5];
+                System.out.println(NODE_HOST);
+            }
+            if (args[6].equals("-nodeport")) {
+                NODE_PORT = Integer.parseInt(args[7]);
+                System.out.println(NODE_PORT);
+            }
+            if (args[8].equals("-coorhost")) {
+                COOR_HOST = args[9];
+                System.out.println(COOR_HOST);
+            }
+            if (args[10].equals("-coorport")) {
+                COOR_PORT = Integer.parseInt(args[11]);
+                System.out.println(COOR_PORT);
+            }
+        }
         cl.beginConnection();
 
     }

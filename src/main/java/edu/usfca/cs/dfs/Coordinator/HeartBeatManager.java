@@ -27,9 +27,9 @@ public class HeartBeatManager extends Connection implements Runnable {
         try {
             System.out.println("Heartbeat Check");
             timeStampMaplock.writeLock().lock();
-            for (Map.Entry<String,  Map<String, Object>> entry : nodeInfo.entrySet()) {
+            for (Map.Entry<String, Map<String, Object>> entry : nodeInfo.entrySet()) {
                 Map<String, Object> nodeinfo = entry.getValue();
-                Long timestamp = (Long)nodeinfo.get("timestamp");
+                Long timestamp = (Long) nodeinfo.get("timestamp");
                 if ((System.currentTimeMillis() - timestamp) > sleepTime) {
                     String hostport = entry.getKey();
                     System.out.println("Node " + hostport + " fails, begin removing and re-balance");
@@ -55,11 +55,11 @@ public class HeartBeatManager extends Connection implements Runnable {
         timeStampMaplock.writeLock().lock();
         try {
             Map<String, Object> nodeinfo = new HashMap<>();
-            nodeinfo.put("timestamp",System.currentTimeMillis() );
-            nodeinfo.put("numRequest",numRequest );
-            nodeinfo.put("usage",usage );
+            nodeinfo.put("timestamp", System.currentTimeMillis());
+            nodeinfo.put("numRequest", numRequest);
+            nodeinfo.put("usage", usage);
 
-            nodeInfo.put(hostPort,nodeinfo );
+            nodeInfo.put(hostPort, nodeinfo);
 
         } finally {
             timeStampMaplock.writeLock().unlock();
@@ -75,6 +75,7 @@ public class HeartBeatManager extends Connection implements Runnable {
             timeStampMaplock.readLock().unlock();
         }
     }
+
     public int getUsage(String hostPort) {
         timeStampMaplock.readLock().lock();
         try {
@@ -84,6 +85,7 @@ public class HeartBeatManager extends Connection implements Runnable {
             timeStampMaplock.readLock().unlock();
         }
     }
+
     public int getNumRequest(String hostPort) {
         timeStampMaplock.readLock().lock();
         try {
@@ -94,16 +96,15 @@ public class HeartBeatManager extends Connection implements Runnable {
         }
     }
 
-    public StorageMessages.DataPacket getNodeInfoPacket (){
+    public StorageMessages.DataPacket getNodeInfoPacket() {
         timeStampMaplock.readLock().lock();
         try {
             StorageMessages.DataPacket.Builder nodeInfoPacket = StorageMessages.DataPacket.newBuilder();
-            for (Map.Entry<String, Map<String, Object>> entry : nodeInfo.entrySet())
-            {
+            for (Map.Entry<String, Map<String, Object>> entry : nodeInfo.entrySet()) {
                 Map<String, Object> nodeinfo = entry.getValue();
                 int usage = (int) nodeinfo.get("usage");
                 int numRequest = (int) nodeinfo.get("numRequest");
-                StorageMessages.NodeHash singleNodeInfo =StorageMessages.NodeHash.newBuilder().setHostPort(entry.getKey()).setUsage(usage).setNumRequest(numRequest).build();
+                StorageMessages.NodeHash singleNodeInfo = StorageMessages.NodeHash.newBuilder().setHostPort(entry.getKey()).setUsage(usage).setNumRequest(numRequest).build();
                 nodeInfoPacket.addNodeList(singleNodeInfo);
             }
             return nodeInfoPacket.build();

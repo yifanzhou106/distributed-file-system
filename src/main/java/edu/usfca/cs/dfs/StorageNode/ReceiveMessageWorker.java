@@ -94,7 +94,12 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
                      */
                     System.out.println("Fixing File Corruption");
                     ifFixFileCorruption(connectionSocket, requestMessage);
-
+                } else if (requestMessage.getType() == StorageMessages.DataPacket.packetType.DELETE_BY_FILENAME) {
+                    /**
+                     * Fix File Corruption
+                     */
+                    System.out.println("Fixing File Corruption");
+                    ifDeleteByFilename(connectionSocket, requestMessage);
                 }
 
             }
@@ -179,8 +184,8 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
              * Ask pre node for this replication and update this chunk
              */
             StorageMessages.DataPacket fileCorrpution = StorageMessages.DataPacket.newBuilder().setType(FIX_FILE_CORRUPTION).setHostport(HOSTPORT).setFileName(filename).setChunkId(chunkID).build();
-            StorageMessages.DataPacket goodFileChunk = sendRequest(preNode,fileCorrpution);
-            fm.addFile(filename,chunkID,goodFileChunk);
+            StorageMessages.DataPacket goodFileChunk = sendRequest(preNode, fileCorrpution);
+            fm.addFile(filename, chunkID, goodFileChunk);
             goodFileChunk.writeDelimitedTo(outstream);
         }
         connectionSocket.close();
@@ -361,9 +366,26 @@ public class ReceiveMessageWorker extends Connection implements Runnable {
         int chunkId = requestMessage.getChunkId();
         String hostport = requestMessage.getHostport();
 
-        StorageMessages.DataPacket goodFileChunk = fm.getGoodFileChunkFromReplication(hostport,filename,chunkId);
+        StorageMessages.DataPacket goodFileChunk = fm.getGoodFileChunkFromReplication(hostport, filename, chunkId);
         goodFileChunk.writeDelimitedTo(outstream);
         connectionSocket.close();
+    }
+
+    public void ifDeleteByFilename(Socket connectionSocket, StorageMessages.DataPacket requestMessage) throws IOException {
+        try {
+            String hostport = requestMessage.getHostport();
+            String filename = requestMessage.getFileName();
+            String hashedName = nameToSha1(filename);
+            if (HOSTPORT.equals(hostport)) {
+                NumRequest++;
+                nm.BcastDeleteFile(requestMessage);
+            }
+            nm.deleteFileFromMetadaMap(hashedName);
+            fm.deleteByFilename(filename);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
 }
